@@ -23,12 +23,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sac_training/train_HOPE_sac.input.img_data.md",
+                "file": "sac_training/train_HOPE_sac.input.Action_Mask.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "train_HOPE_sac.input.img_data"
+              "title": "train_HOPE_sac.input.Action_Mask"
             }
           },
           {
@@ -155,7 +155,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5041847229004
+    "width": 308.5041847229004,
+    "collapsed": true
   },
   "right": {
     "id": "6b4e7717a6ea7a5f",
@@ -274,6 +275,8 @@
   },
   "active": "c0585440a869b1f8",
   "lastOpenFiles": [
+    "sac_training/train_HOPE_sac.input.target_data.md",
+    "sac_training/train_HOPE_sac.input.img_data.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.md",
     "sac_training/train_HOPE_sac.md",
@@ -284,10 +287,8 @@
     "readme.md",
     "apollo（复件）.md",
     "sac_training/network_process.md",
-    "sac_training/train_HOPE_sac.input.img_data.md",
     "sac_training/cubic-spline.md",
     "sac_training/train_HOPE_sac.input.Action_Mask.md",
-    "sac_training/train_HOPE_sac.input.target_data.md",
     "qpollo.modules.planning.canvas",
     "apollo.md",
     "numpy.md",
