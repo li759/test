@@ -28,7 +28,9 @@ $y_{i} = (a * y_{i} + b * y[i+1] + ((a^3 - a) * M[i] + (b^3 - b) * M[i+1]) * hi*
 	- $t^{3}-t=b^{3}-b,(1-t)^{3}-(1-t)=a^{3}-a$
 	- 把线性插值项与三次修正项重新归类
 		$S(t)=\underbrace{(1-t) y_{0}+t y_{1}}_{\text{线性}}+\frac{h^{2}}{6}\left[\left(a^{3}-a\right) M_{0}+\left(b^{3}-b\right) M_{1}\right]$
-
+5. 换回原始变量
+	把$h$换$h_i$并把$t$换回$x$既得
+	
 ![[Pasted image 20250730102250.png]]
 三次样条在区间 [xi​,xi+1​] 上的**Hermite插值形式**，可写成：
 $S(x)=ay_i​+by_{i+1}​+\frac {h_i^2}{6}[(a^3-a)M_i+(b^3-b)M_{i+1}]$
@@ -44,8 +46,21 @@ $H^′(t)=a_1​+2a_2​t+3a_3​t^2.$
 
 $\begin{cases}a_0 &= y_0 \\a_0 + a_1 +a_2 +a_3&= y_1\\a_1 &=  m_0 \\ a_1 +2a_2 +3a_3&=  m_1\end{cases}$
 
-![[Pasted image 20250730102701.png]]
-![[Pasted image 20250730102716.png]]
+
+设三次多项式：$P(t)=a_{0}+a_{1} t+a_{2} t^{2}+a_{3} t^{3}$
+其一阶导、二阶导分别为：$P^{\prime}(t)=a_{1}+2 a_{2} t+3 a_{3} t^{2}, \quad P^{\prime \prime}(t)=2 a_{2}+6 a_{3} t$
+4x4方程组：
+1. $H_{00}(T)$满足
+	$H_{00}(0)=1, H_{00}(1)=0, H_{00}^{\prime}(0)=0, H_{00}^{\prime}(1)=0$
+	$\left[\begin{array}{llll}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{array}\right]$$\left[\begin{array}{l}a_{0} \\a_{1} \\a_{2} \\a_{3}\end{array}\right]=$$\left[\begin{array}{l}1 \\0 \\0 \\0\end{array}\right]$ $\Rightarrow$$\left[\begin{array}{c}1 \\0 \\-3 \\2\end{array}\right]$$\Longrightarrow$ $H_{00}(t)=1-3 t^{2}+2 t^{3}$
+2.  $H_{01}(T)$满足
+	$H_{01}(0)=0, H_{01}(1)=1, H_{01}^{\prime}(0)=0, H_{01}^{\prime}(1)=0$
+	$\left[\begin{array}{llll}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{array}\right]\left[\begin{array}{l}a_{0} \\a_{1} \\a_{2} \\a_{3}\end{array}\right]=\left[\begin{array}{l}0 \\1 \\0 \\0\end{array}\right]\Rightarrow\left[\begin{array}{c}0 \\0 \\3 \\-2\end{array}\right] \Longrightarrow H_{01}(t)=3 t^{2}-2 t^{3}$
+3.  $H_{10}(T)$满足
+	$H_{10}(0)=0, H_{10}(1)=0, H_{10}^{\prime}(0)=1, H_{10}^{\prime}(1)=0$
+	$\left[\begin{array}{llll}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{array}\right]\left[\begin{array}{l}a_{0} \\a_{1} \\a_{2} \\a_{3}\end{array}\right]=\left[\begin{array}{l}0 \\1 \\0 \\0\end{array}\right] \Rightarrow\left[\begin{array}{c}0 \\0 \\3 \\-2\end{array}\right] \Longrightarrow H_{01}(t)=3 t^{2}-2 t^{3}$
+
+
 ![[Pasted image 20250730102731.png]]
 ![[Pasted image 20250730102745.png]]
 
