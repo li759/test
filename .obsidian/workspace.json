@@ -72,8 +72,23 @@
               "icon": "lucide-file",
               "title": "train_HOPE_sac.input.lidar_data"
             }
+          },
+          {
+            "id": "236106af7a582d20",
+            "type": "leaf",
+            "state": {
+              "type": "split-diff-view",
+              "state": {
+                "aFile": ".obsidian/plugins/manual-sorting/data.json",
+                "bFile": ".obsidian/plugins/manual-sorting/data.json",
+                "aRef": ""
+              },
+              "icon": "diff",
+              "title": "Diff: data.json"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -256,8 +271,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "8822ee2dfa4ba8dc",
+  "active": "c0585440a869b1f8",
   "lastOpenFiles": [
+    "sac_training/train_HOPE_sac.md",
     "git/README.md",
     "git",
     "README.md",
@@ -265,7 +281,6 @@
     "apollo（复件）.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.md",
-    "sac_training/train_HOPE_sac.md",
     "sac_training/network_process.md",
     "sac_training/train_HOPE_sac.input.img_data.md",
     "sac_training/cubic-spline.md",
