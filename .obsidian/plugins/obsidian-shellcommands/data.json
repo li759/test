@@ -31,7 +31,7 @@
       "shells": {},
       "alias": "qilin",
       "icon": "lucide-github",
-      "confirm_execution": false,
+      "confirm_execution": true,
       "ignore_error_codes": [],
       "input_contents": {
         "stdin": null
