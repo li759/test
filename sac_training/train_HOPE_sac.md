@@ -1,8 +1,8 @@
 # 1. 运行主流程（高层）
 ## 1.1 参数解析与环境初始化
 
-1. 场景选择器初始化wancheng
-	  `def __init__(self) -> None:`
+1. 场景选择器初始化
+		`def __init__(self) -> None:`
 			`self.scene_types = {0: 'Normal', 1: 'Complex', 2: 'Extrem', 3: 'dlp'}`
 		`self.target_success_rate = np.array([0.95, 0.95, 0.9, 0.99])`
 		`# 记录每种场景的成功率`
