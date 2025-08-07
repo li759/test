@@ -21,14 +21,17 @@
             "id": "c0585440a869b1f8",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "sac_training/train_HOPE_sac.input.Action_Mask.md",
-                "mode": "source",
-                "source": false
+                "file": "qpollo.modules.planning.canvas",
+                "viewState": {
+                  "x": -198.45926755636964,
+                  "y": -57.08605450115252,
+                  "zoom": -0.34241466956663597
+                }
               },
-              "icon": "lucide-file",
-              "title": "train_HOPE_sac.input.Action_Mask"
+              "icon": "lucide-layout-dashboard",
+              "title": "qpollo.modules.planning"
             }
           },
           {
@@ -72,23 +75,9 @@
               "icon": "lucide-file",
               "title": "train_HOPE_sac.input.lidar_data"
             }
-          },
-          {
-            "id": "236106af7a582d20",
-            "type": "leaf",
-            "state": {
-              "type": "split-diff-view",
-              "state": {
-                "aFile": ".obsidian/plugins/manual-sorting/data.json",
-                "bFile": ".obsidian/plugins/manual-sorting/data.json",
-                "aRef": ""
-              },
-              "icon": "diff",
-              "title": "Diff: data.json"
-            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -155,7 +144,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5041847229004
+    "width": 308.5041847229004,
+    "collapsed": true
   },
   "right": {
     "id": "6b4e7717a6ea7a5f",
@@ -237,19 +227,9 @@
               "icon": "highlighter",
               "title": "HiNote"
             }
-          },
-          {
-            "id": "57e1690c51f28f52",
-            "type": "leaf",
-            "state": {
-              "type": "git-view",
-              "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
-            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -272,10 +252,14 @@
       "obsidian-shellcommands:Shell commands: Custom variables": false
     }
   },
-  "active": "c0585440a869b1f8",
+  "active": "f7ed71c80e093599",
   "lastOpenFiles": [
-    "sac_training/train_HOPE_sac.input.target_data.md",
+    "qpollo.modules.planning.canvas",
+    "Obsiden.md",
     "sac_training/train_HOPE_sac.input.img_data.md",
+    "sac_training/cubic-spline.md",
+    "sac_training/train_HOPE_sac.input.Action_Mask.md",
+    "sac_training/train_HOPE_sac.input.target_data.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.md",
     "sac_training/train_HOPE_sac.md",
@@ -286,12 +270,8 @@
     "readme.md",
     "apollo（复件）.md",
     "sac_training/network_process.md",
-    "sac_training/cubic-spline.md",
-    "sac_training/train_HOPE_sac.input.Action_Mask.md",
-    "qpollo.modules.planning.canvas",
     "apollo.md",
     "numpy.md",
-    "Obsiden.md",
     "image-2.png",
     "apollo.modules.planning.md",
     "未命名.md",
