@@ -4,19 +4,31 @@ $b = (xi - x[i]) / hi$
 $y_{i} = (a * y_{i} + b * y[i+1] + ((a^3 - a) * M[i] + (b^3 - b) * M[i+1]) * hi**2 / 6)$
 
 
-区间标准化：从 \($[x_i,x_{i+1}]$\) 到 $([0,h])$
-给定原始区间  
-$y(x)=ay_i+by_{i+1}+\frac{h_{i}^2}{6}$
+1. 区间标准化：从 \($[x_i,x_{i+1}]$\) 到 $([0,h])$
+	给定原始区间  
+	$y(x)=a y_{i}+b y_{i+1}+\frac{h_{i}^{2}}{6}\left[\left(a^{3}-a\right) M_{i}+\left(b^{3}-b\right) M_{i+1}\right]$
+	$a=\frac{x_{i+1}-x}{h_{i}}, b=\frac{x-x_{i}}{h_{i}}, h_{i}=x$
+	在 $[x_{i}, x_{i+1}]$ 取局部变量 
+	$t=\frac{x-x_{i}}{h_{i}} \in[0,1] \quad \Longrightarrow \quad a=1-t,\  b=t$
+	于是$\frac{d}{d x}=\frac{1}{h_{i}} \frac{d}{d t}, \quad \frac{d^{2}}{d x^{2}}=\frac{1}{h_{i}^{2}} \frac{d^{2}}{d t^{2}}$ 
+2. 插值与二阶导条件
+	- 函数值
+		$S(0)=y_{0}, \quad S(1)=y_{1}$
+	- 二阶导数值（样条弯矩给出）
+		$S^{\prime \prime}(0)=M_{0}, \quad S^{\prime \prime}(1)=M_{1}$
+3. 用Hermite基直接写出
+	利用Hermite基函数（满足上述4个约束的标准三次基）
+	$S(t)=y_{0} H_{0}(t)+y_{1} H_{1}(t)+M_{0} h^{2} \hat{H}_{0}(t)+M_{1} h^{2} \hat{H}_{1}(t),$
+	$H_{0}(t)=1-3 t^{2}+2 t^{3}$,      $H_{1}(t)=3 t^{2}-2 t^{3}$, 
+	$\hat{H}_{0}(t)=\frac{1}{2}\left(t^{3}-t^{2}\right)$,          $\hat{H}_{1}(t)=\frac{1}{2}(t^{3}-t^{2})$
+	把$\hat{H}$的系数$\frac{1}{2}$合并到$h^2/6$得到：
+	$S(t)=y_{0}\left(1-3 t^{2}+2 t^{3}\right)+y_{1}\left(3 t^{2}-2 t^{3}\right)+\frac{h^{2}}{6}\left[M_{0}\left(t^{3}-t\right)+M_{1}\left(t^{3}-t\right)\right]$
+4. 整理成a,b形式
+	回到$a=1-t, b=t$
+	- $t^{3}-t=b^{3}-b,(1-t)^{3}-(1-t)=a^{3}-a$
+	- 把线性插值项与三次修正项重新归类
+		$S(t)=\underbrace{(1-t) y_{0}+t y_{1}}_{\text{线性}}+\frac{h^{2}}{6}\left[\left(a^{3}-a\right) M_{0}+\left(b^{3}-b\right) M_{1}\right]$
 
-![[Pasted image 20250730101928.png]]
-![[Pasted image 20250730101947.png]]
-![[Pasted image 20250730102119.png|395x80]]
-![[Pasted image 20250730102522.png|396x97]]
-
-![[Pasted image 20250730102153.png]]
-$S(0)=y_0,\quad S(1)=y_1$
-![[Pasted image 20250730102210.png]]
-![[Pasted image 20250730102227.png]]
 ![[Pasted image 20250730102250.png]]
 三次样条在区间 [xi​,xi+1​] 上的**Hermite插值形式**，可写成：
 $S(x)=ay_i​+by_{i+1}​+\frac {h_i^2}{6}[(a^3-a)M_i+(b^3-b)M_{i+1}]$
