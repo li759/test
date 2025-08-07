@@ -6,7 +6,6 @@
       "README.md",
       "qpollo.modules.planning.canvas",
       "apollo.md",
-      "numpy.md",
       "Obsiden.md",
       "assets",
       "sac_training"
@@ -45,7 +44,8 @@
       "sac_training/train_HOPE_sac.input.target_data.md",
       "sac_training/train_HOPE_sac.input.Action_Mask.md",
       "sac_training/network_process.md",
-      "sac_training/cubic-spline.md"
+      "sac_training/cubic-spline.md",
+      "sac_training/math.md"
     ]
   },
   "draggingEnabled": true,
