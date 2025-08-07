@@ -65,6 +65,11 @@
       "id": "editor:toggle-numbered-list",
       "name": "有序列表",
       "icon": "lucide-list-ordered"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-24czu9cit9",
+      "name": "Shell commands: Execute: qilin",
+      "icon": "add-note-glyph"
     }
   ],
   "appendMethod": "workspace",

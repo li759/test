@@ -87,7 +87,8 @@
               "title": "Diff: data.json"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -267,10 +268,11 @@
       "dendron-tree:Open Dendron Tree": false,
       "markdown-importer:打开 Markdown 格式转换器": false,
       "pkmer:Open Pkmer Market": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-shellcommands:Shell commands: Custom variables": false
     }
   },
-  "active": "8822ee2dfa4ba8dc",
+  "active": "c0585440a869b1f8",
   "lastOpenFiles": [
     "git_commit.sh",
     "sac_training/train_HOPE_sac.md",
