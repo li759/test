@@ -1,6 +1,8 @@
 {
   "customFileOrder": {
     "/": [
+      "git",
+      "README.md",
       "qpollo.modules.planning.canvas",
       "apollo.md",
       "numpy.md",
@@ -32,6 +34,9 @@
       "assets/cubic-spline/09.jpg",
       "assets/cubic-spline/Pasted image 20250730100719.png",
       "assets/cubic-spline/file-20250729171151271.png"
+    ],
+    "git": [
+      "git/README.md"
     ],
     "sac_training": [
       "sac_training/train_HOPE_sac.md",

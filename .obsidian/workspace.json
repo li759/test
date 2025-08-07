@@ -238,7 +238,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 470.5
+    "width": 470.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -255,8 +256,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "57e1690c51f28f52",
+  "active": "8822ee2dfa4ba8dc",
   "lastOpenFiles": [
+    "git/README.md",
+    "git",
+    "README.md",
+    "readme.md",
+    "apollo（复件）.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.md",
     "sac_training/train_HOPE_sac.md",
@@ -287,10 +293,6 @@
     "未命名 2 1.md",
     "obsidian左侧文件夹显示实现包含关系的插件.canvas",
     "apollo",
-    "copilot-custom-prompts/Simplify.md",
-    "copilot-custom-prompts/Summarize.md",
-    "copilot-custom-prompts/Rewrite as tweet thread.md",
-    "copilot-custom-prompts/Fix grammar and spelling.md",
     "copilot-custom-prompts",
     "assets/cubic-spline/Pasted image 20250730102745.png",
     "assets/cubic-spline/Pasted image 20250730102731.png",
