@@ -1,8 +1,8 @@
 {
   "customFileOrder": {
     "/": [
+      "Excalidraw",
       "git_commit.sh",
-      "git",
       "README.md",
       "qpollo.modules.planning.canvas",
       "apollo.md",
@@ -36,9 +36,7 @@
       "assets/cubic-spline/Pasted image 20250730100719.png",
       "assets/cubic-spline/file-20250729171151271.png"
     ],
-    "git": [
-      "git/README.md"
-    ],
+    "Excalidraw": [],
     "sac_training": [
       "sac_training/train_HOPE_sac.md",
       "sac_training/train_HOPE_sac.input.md",

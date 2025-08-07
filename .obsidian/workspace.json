@@ -25,9 +25,9 @@
               "state": {
                 "file": "qpollo.modules.planning.canvas",
                 "viewState": {
-                  "x": -198.45926755636964,
-                  "y": -57.08605450115252,
-                  "zoom": -0.34241466956663597
+                  "x": -282.3384339570238,
+                  "y": -701.7527798904947,
+                  "zoom": -0.38241464667845176
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -38,14 +38,17 @@
             "id": "f7ed71c80e093599",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "sac_training/train_HOPE_sac.input.lidar_data.md",
-                "mode": "source",
-                "source": false
+                "file": "qpollo.modules.planning.canvas",
+                "viewState": {
+                  "x": -194.29370777998312,
+                  "y": -36.521503089870976,
+                  "zoom": -0.48000001144409193
+                }
               },
-              "icon": "lucide-file",
-              "title": "train_HOPE_sac.input.lidar_data"
+              "icon": "lucide-layout-dashboard",
+              "title": "qpollo.modules.planning"
             }
           },
           {
@@ -77,7 +80,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -144,8 +147,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5041847229004,
-    "collapsed": true
+    "width": 308.5041847229004
   },
   "right": {
     "id": "6b4e7717a6ea7a5f",
@@ -249,28 +251,32 @@
       "markdown-importer:打开 Markdown 格式转换器": false,
       "pkmer:Open Pkmer Market": false,
       "obsidian-git:Open Git source control": false,
-      "obsidian-shellcommands:Shell commands: Custom variables": false
+      "obsidian-shellcommands:Shell commands: Custom variables": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "f7ed71c80e093599",
+  "active": "0dcfa838f6763ebb",
   "lastOpenFiles": [
     "qpollo.modules.planning.canvas",
+    "git/README.md",
+    "Excalidraw/Drawing 2025-08-07 16.00.04.excalidraw.md",
+    "Excalidraw/Drawing 2025-08-07 16.00.42.excalidraw.md",
+    "apollo.md",
+    "README.md",
+    "Excalidraw",
     "Obsiden.md",
-    "sac_training/train_HOPE_sac.input.img_data.md",
     "sac_training/cubic-spline.md",
+    "sac_training/network_process.md",
+    "sac_training/train_HOPE_sac.md",
+    "sac_training/train_HOPE_sac.input.lidar_data.md",
+    "sac_training/train_HOPE_sac.input.img_data.md",
     "sac_training/train_HOPE_sac.input.Action_Mask.md",
     "sac_training/train_HOPE_sac.input.target_data.md",
-    "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.md",
-    "sac_training/train_HOPE_sac.md",
     "git_commit.sh",
-    "git/README.md",
     "git",
-    "README.md",
     "readme.md",
     "apollo（复件）.md",
-    "sac_training/network_process.md",
-    "apollo.md",
     "numpy.md",
     "image-2.png",
     "apollo.modules.planning.md",
@@ -285,8 +291,6 @@
     "pkm.obsidian.md",
     "pkm.md",
     "pkm.obsidian.dendrontree.md",
-    "2025-07 竞品分析.md",
-    "笔记1.md",
     "obsidian左侧文件夹显示实现包含关系的插件.canvas",
     "apollo",
     "copilot-custom-prompts",
