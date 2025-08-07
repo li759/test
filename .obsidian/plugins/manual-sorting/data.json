@@ -1,6 +1,7 @@
 {
   "customFileOrder": {
     "/": [
+      "git_commit.sh",
       "git",
       "README.md",
       "qpollo.modules.planning.canvas",

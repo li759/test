@@ -10,7 +10,6 @@
 		`for scene_name in self.scene_types:`
 			`self.success_record[scene_name] = []`
 	功能：管理4种不同难度的场景：Normal、Complex、Extrem、dlp ；根据历史成功率动态选择训练场景； 使用自适应采样策略平衡各场景的训练
-12
 2. 环境初始化
 	`raw_env = CarParking(fps=100, verbose=verbose)`
 	`env = CarParkingWrapper(raw_env)`

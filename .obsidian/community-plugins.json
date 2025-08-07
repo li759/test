@@ -10,5 +10,6 @@
   "dendron-tree",
   "pkmer",
   "mathlive",
-  "obsidian-git"
+  "obsidian-git",
+  "obsidian-shellcommands"
 ]
