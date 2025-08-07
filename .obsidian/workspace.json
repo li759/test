@@ -1,0 +1,305 @@
+{
+  "main": {
+    "id": "19b0c086c62af431",
+    "type": "split",
+    "children": [
+      {
+        "id": "cf09f00d20424343",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8822ee2dfa4ba8dc",
+            "type": "leaf",
+            "state": {
+              "type": "pkmer-downloader",
+              "state": {},
+              "icon": "bookmark",
+              "title": "Pkmer Market"
+            }
+          },
+          {
+            "id": "c0585440a869b1f8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "sac_training/train_HOPE_sac.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "train_HOPE_sac"
+            }
+          },
+          {
+            "id": "f7ed71c80e093599",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "sac_training/train_HOPE_sac.input.lidar_data.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "train_HOPE_sac.input.lidar_data"
+            }
+          },
+          {
+            "id": "08e1bb0def60c4d6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "sac_training/train_HOPE_sac.input.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "train_HOPE_sac.input"
+            }
+          },
+          {
+            "id": "0dcfa838f6763ebb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "sac_training/train_HOPE_sac.input.lidar_data.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "train_HOPE_sac.input.lidar_data"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ef9c7a9e29936383",
+    "type": "split",
+    "children": [
+      {
+        "id": "bf8008ebc26c88c3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6792a5c70cf2d7d5",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "03edbfe10d9941ba",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "43fd62af1e2cc5f3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          },
+          {
+            "id": "ad347e695476691c",
+            "type": "leaf",
+            "state": {
+              "type": "dendron-tree-view",
+              "state": {},
+              "icon": "dendron-activity-bar",
+              "title": "Dendron Tree"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 308.5041847229004
+  },
+  "right": {
+    "id": "6b4e7717a6ea7a5f",
+    "type": "split",
+    "children": [
+      {
+        "id": "24d46970063c6b24",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f12db36e03f079ae",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "笔记1.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": true,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "笔记1 的反向链接列表"
+            }
+          },
+          {
+            "id": "6fce11d8d5b28109",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "笔记1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "笔记1 的出链列表"
+            }
+          },
+          {
+            "id": "cffe6326542cfcdf",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "647a6c549407fae3",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "sac_training/cubic-spline.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "cubic-spline 的大纲"
+            }
+          },
+          {
+            "id": "596e1670344f35d3",
+            "type": "leaf",
+            "state": {
+              "type": "comment-view",
+              "state": {},
+              "icon": "highlighter",
+              "title": "HiNote"
+            }
+          },
+          {
+            "id": "57e1690c51f28f52",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 470.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "hi-note:HiNote": false,
+      "dendron-tree:Open Dendron Tree": false,
+      "markdown-importer:打开 Markdown 格式转换器": false,
+      "pkmer:Open Pkmer Market": false,
+      "obsidian-git:Open Git source control": false
+    }
+  },
+  "active": "57e1690c51f28f52",
+  "lastOpenFiles": [
+    "sac_training/train_HOPE_sac.input.lidar_data.md",
+    "sac_training/train_HOPE_sac.input.md",
+    "sac_training/train_HOPE_sac.md",
+    "sac_training/network_process.md",
+    "sac_training/train_HOPE_sac.input.img_data.md",
+    "sac_training/cubic-spline.md",
+    "sac_training/train_HOPE_sac.input.Action_Mask.md",
+    "sac_training/train_HOPE_sac.input.target_data.md",
+    "qpollo.modules.planning.canvas",
+    "apollo.md",
+    "numpy.md",
+    "Obsiden.md",
+    "image-2.png",
+    "apollo.modules.planning.md",
+    "未命名.md",
+    "image-3.png",
+    "image.png",
+    "image-1.png",
+    "未命名",
+    "root.md",
+    "上级笔记.md",
+    "PKM.Obsidian.DendronTree.md.md",
+    "pkm.obsidian.md",
+    "pkm.md",
+    "pkm.obsidian.dendrontree.md",
+    "2025-07 竞品分析.md",
+    "笔记1.md",
+    "未命名 2 1.md",
+    "obsidian左侧文件夹显示实现包含关系的插件.canvas",
+    "apollo",
+    "copilot-custom-prompts/Simplify.md",
+    "copilot-custom-prompts/Summarize.md",
+    "copilot-custom-prompts/Rewrite as tweet thread.md",
+    "copilot-custom-prompts/Fix grammar and spelling.md",
+    "copilot-custom-prompts",
+    "assets/cubic-spline/Pasted image 20250730102745.png",
+    "assets/cubic-spline/Pasted image 20250730102731.png",
+    "assets/cubic-spline/Pasted image 20250730102716.png",
+    "assets/cubic-spline/Pasted image 20250730102701.png",
+    "assets/cubic-spline/Pasted image 20250730102629.png",
+    "assets/cubic-spline/Pasted image 20250730102558.png",
+    "sac_training",
+    "assets/cubic-spline",
+    "assets"
+  ]
+}

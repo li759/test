@@ -1,0 +1,209 @@
+{
+  "main": {
+    "id": "0a013fb31c54c2ac",
+    "type": "split",
+    "children": [
+      {
+        "id": "be1558190547ec1a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a58b4f35270c9829",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ],
+        "stacked": true
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "745a473b43c5244e",
+    "type": "split",
+    "children": [
+      {
+        "id": "3d8787b6e1fc2bac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "77edc61bb625bd5c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "4547cdcdd12fb242",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "f75c1de94ba650c4",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200.5124969482422
+  },
+  "right": {
+    "id": "27207dcc6c340709",
+    "type": "split",
+    "children": [
+      {
+        "id": "8c3f00cdc89ff4ef",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "27275dc750e11a35",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "lidar_data.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "lidar_data 的反向链接列表"
+            }
+          },
+          {
+            "id": "42198c7ea1b113c1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "s.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "s 的出链列表"
+            }
+          },
+          {
+            "id": "623a6ff4ac1dc27e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "a140b065447a0fa4",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "cubic-spline.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "cubic-spline 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 526.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "a58b4f35270c9829",
+  "lastOpenFiles": [
+    "cubic-spline.md",
+    "assets/cubic-spline/09.png",
+    "--network_process.md",
+    "assets/cubic-spline/file-20250729171151271.png",
+    "----img_data.md",
+    "----target_data.md",
+    "numpy.md",
+    "Obsiden.md",
+    "train_HOPE_sac.md",
+    "file-20250729171151271.png",
+    "09 1.png",
+    "assets/cubic-spline",
+    "assets",
+    "assets/三次样线条/file-20250729170302934.png",
+    "assets/09.png",
+    "09.png",
+    "09 2.png",
+    "home/qilin.md",
+    "home",
+    "home/b.md",
+    "Pasted image 20250729162227.png",
+    "home/qilin/图片/截图.md",
+    "home/qilin/图片",
+    "home/qilin",
+    "[/home/qilin/图片/截图/截图.md",
+    "[/home/qilin/图片/截图",
+    "[/home/qilin/图片",
+    "[/home/qilin",
+    "[/home",
+    "[",
+    "![[Pasted.md",
+    "----lidar_data.md",
+    "--input.md",
+    "s.canvas",
+    "外文.md",
+    "未命名 1.md",
+    "2025-07-24.md"
+  ]
+}
