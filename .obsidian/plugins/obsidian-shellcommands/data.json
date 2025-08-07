@@ -29,8 +29,8 @@
         "default": "/home/qilin/文档/qilin/git_commit.sh"
       },
       "shells": {},
-      "alias": "",
-      "icon": null,
+      "alias": "qilin",
+      "icon": "lucide-github",
       "confirm_execution": false,
       "ignore_error_codes": [],
       "input_contents": {
