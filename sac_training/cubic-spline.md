@@ -30,16 +30,22 @@ $y_{i} = (a * y_{i} + b * y[i+1] + ((a^3 - a) * M[i] + (b^3 - b) * M[i+1]) * hi*
 		$S(t)=\underbrace{(1-t) y_{0}+t y_{1}}_{\text{线性}}+\frac{h^{2}}{6}\left[\left(a^{3}-a\right) M_{0}+\left(b^{3}-b\right) M_{1}\right]$
 5. 换回原始变量
 	把$h$换$h_i$并把$t$换回$x$既得
+	$y(x)=a y_{i}+b y_{i+1}+\frac{h_{i}^{2}}{6}\left[\left(a^{3}-a\right) M_{i}+\left(b^{3}-b\right) M_{i+1}\right]$
+	其中：$a=\frac{x_{i+1}-x}{h_{i}}, \quad b=\frac{x-x_{i}}{h_{i}} .$
 	
-![[Pasted image 20250730102250.png]]
+
 三次样条在区间 [xi​,xi+1​] 上的**Hermite插值形式**，可写成：
 $S(x)=ay_i​+by_{i+1}​+\frac {h_i^2}{6}[(a^3-a)M_i+(b^3-b)M_{i+1}]$
-
 $H(t)=a_0​+a_1​t+a_2​t^2+a_3​t^3，t∈[0,1].$
-![[Pasted image 20250730102543.png]]
+对4个基函数分别解4组4✖4线性方程组，得到：
+$\begin{array}{l}H_{00}(t)=1-3 t^{2}+2 t^{3}, \\H_{01}(t)=3 t^{2}-2 t^{3}, \\H_{20}(t)=\frac{1}{2}\left(t^{3}-t^{2}\right), \\H_{21}(t)=\frac{1}{2}\left(t^{3}-t^{2}\right) .\end{array}$
 $H(0)=y_0​$左端点函数值；$H(1)=y_1$右端点函数值
 $H^′(0)=m_0$​左端点一阶导；$H^′(1)=m_1​$右端点一阶导
 $H^′(t)=a_1​+2a_2​t+3a_3​t^2.$
+把基函数加权叠加：
+$H(t)=y_{0} H_{00}(t)+y_{1} H_{01}(t)+M_{0} h^{2} H_{20}(t)+M_{1} h^{2} H_{21}(t),$
+再把$1/2$吸收到整体系数，就得到常见的
+$H(t)=y_{0}\left(1-3 t^{2}+2 t^{3}\right)+y_{1}\left(3 t^{2}-2 t^{3}\right)+\frac{h^{2}}{6}\left[\left(t^{3}-t\right) M_{0}+\left(t^{3}-t\right) M_{1}\right] .$
 ![[Pasted image 20250730102558.png]]
 ![[Pasted image 20250730102629.png]]
 
@@ -59,10 +65,11 @@ $\begin{cases}a_0 &= y_0 \\a_0 + a_1 +a_2 +a_3&= y_1\\a_1 &=  m_0 \\ a_1 +2a_2 +
 3.  $H_{10}(T)$满足
 	$H_{10}(0)=0, H_{10}(1)=0, H_{10}^{\prime}(0)=1, H_{10}^{\prime}(1)=0$
 	$\left[\begin{array}{llll}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{array}\right]\left[\begin{array}{l}a_{0} \\a_{1} \\a_{2} \\a_{3}\end{array}\right]=\left[\begin{array}{l}0 \\1 \\0 \\0\end{array}\right] \Rightarrow\left[\begin{array}{c}0 \\0 \\3 \\-2\end{array}\right] \Longrightarrow H_{01}(t)=3 t^{2}-2 t^{3}$
+4.  $H_{11}(T)$满足
+	$H_{11}(0)=0, H_{11}(1)=0, H_{11}^{\prime}(0)=1, H_{10}^{\prime}(1)=0$
+	$\left[\begin{array}{llll}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{array}\right]\left[\begin{array}{l}a_{0} \\a_{1} \\a_{2} \\a_{3}\end{array}\right]=\left[\begin{array}{l}0 \\0 \\0 \\1\end{array}\right] \Rightarrow\left[\begin{array}{c}0 \\0 \\-1 \\1\end{array}\right] \Longrightarrow H_{11}(t)=-t^{2}+t^{3}$
 
 
-![[Pasted image 20250730102731.png]]
-![[Pasted image 20250730102745.png]]
 
 
 $\begin{bmatrix}1 & 0 & 0 & 0 \\1 & 1 & 1 & 1 \\0 & 1 & 0 & 0 \\0 & 1 & 2 & 3\end{bmatrix}\begin{bmatrix}a_0 \\ a_1 \\ a_2 \\ a_3\end{bmatrix}=\begin{bmatrix}y_0 \\ y_1 \\ m_0 \\ m_1\end{bmatrix}$
