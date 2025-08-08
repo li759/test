@@ -68,12 +68,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sac_training/cubic-spline.md",
+                "file": "sac_training/network_process.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "cubic-spline"
+              "title": "network_process"
             }
           }
         ],
@@ -226,9 +226,19 @@
               "icon": "highlighter",
               "title": "HiNote"
             }
+          },
+          {
+            "id": "67ba52e2c0d79623",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -254,22 +264,22 @@
   },
   "active": "1137f49bb6ff9f22",
   "lastOpenFiles": [
+    "sac_training/cubic-spline.md",
+    "sac_training/network_process.md",
     "sac_training/math.md",
+    "README.md",
+    "Obsiden.md",
+    "qpollo.modules.planning.canvas",
     "sac_training/train_HOPE_sac.md",
     "sac_training/train_HOPE_sac.input.Action_Mask.md",
-    "sac_training/cubic-spline.md",
     "sac_training/train_HOPE_sac.input.md",
-    "Obsiden.md",
     "assets/cubic-spline/09.jpg",
     "assets/cubic-spline/Pasted image 20250730101947.png",
     "assets/cubic-spline/Pasted image 20250730101042.png",
-    "sac_training/network_process.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
-    "qpollo.modules.planning.canvas",
     "sac_training/train_HOPE_sac.input.target_data.md",
     "sac_training/train_HOPE_sac.input.img_data.md",
     "apollo.md",
-    "README.md",
     "git/README.md",
     "Excalidraw/Drawing 2025-08-07 16.00.04.excalidraw.md",
     "Excalidraw/Drawing 2025-08-07 16.00.42.excalidraw.md",

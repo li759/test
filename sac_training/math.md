@@ -1,7 +1,7 @@
 [[sac_training]]
 
 | 算法库         | 主要功能   | 数学公式       | 源码位置                |
-| ----------- | ------ | ---------- | ------------------- |
+| ----------- | ------ | :--------- | :------------------ |
 | PyTorch     | 深度学习框架 | 自动微分、张量运算  | 全项目                 |
 | SAC         | 强化学习算法 | 熵正则化、双Q网络  | sac_agent.py        |
 | Transformer | 注意力机制  | 自注意力、多头注意力 | attention.py        |
@@ -74,16 +74,16 @@
 	- 网络结构（src/model/network.py）
 		策略网络/价值网络：MultiObsEmbedding，支持多模态输入（激光、图像、目标、动作掩码等），可选注意力机制。
 3. SAC训练主流程（伪代码+源码结合）
-	for each training step:
-		# 1. 采样动作
-		action, log_prob = agent.get_action(obs)
-		# 2. 环境交互
-		next_obs, reward, done, info = env.step(action)
-		# 3. 存储经验
-		agent.push_memory((obs, action, reward, done, log_prob, next_obs))
-		# 4. 批量采样经验，更新网络
-		if enough samples:
-		actor_loss, critic_loss = agent.update()
+	`for each training step:`
+		`# 1. 采样动作`
+		`action, log_prob = agent.get_action(obs)`
+		`# 2. 环境交互`
+		`next_obs, reward, done, info = env.step(action)`
+		`# 3. 存储经验`
+		`agent.push_memory((obs, action, reward, done, log_prob, next_obs))`
+		`# 4. 批量采样经验，更新网络`
+		`if enough samples:`
+		`actor_loss, critic_loss = agent.update()`
  4. 源码与公式一一对应关系
 	
 | 数学公式      | 源码方法                                                                  | 说明        |
