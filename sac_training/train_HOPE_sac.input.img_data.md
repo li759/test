@@ -23,7 +23,7 @@
 	- 每个像素：表示车辆视角下某个空间位置的颜色信息。
 	- 三个通道：分别为R、G、B。
 # 4. 数据流动总结
-1. 环境 reset/step/render 时，调用 CarParking.render()。
-2. render() 调用 get_img_observation() 获取车辆视角RGB图像。
-3. process_img_observation() 调用 Obs_Processor.process_img() 进行下采样、归一化等处理。
-4. 处理后的图像作为 obs['img']，供后续神经网络输入。
+	1. 环境 reset/step/render 时，调用 CarParking.render()。
+	2. render() 调用 get_img_observation() 获取车辆视角RGB图像。
+	3. process_img_observation() 调用 Obs_Processor.process_img() 进行下采样、归一化等处理。
+	4. 处理后的图像作为 obs['img']，供后续神经网络输入。

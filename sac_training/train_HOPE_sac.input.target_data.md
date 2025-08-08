@@ -1,11 +1,12 @@
 [[train_HOPE_sac.input]]
+
 1. 环境 reset/step/render 时，调用 CarParking.render()。
 2. render() 调用 _get_targt_repr()。
 3. _get_targt_repr() 计算车辆与目标的相对距离、角度、朝向，生成长度为5的 numpy 数组。
 4. 该数组作为 obs['target']，供后续神经网络输入。
 - <font color="#ffffff">车辆当前位置和朝向</font>：($x_{ego},y_{ego},θ_{ego}$)
 - 目标位置和朝向：($x_{dest},y_{dest},θ_{dest}$)
-则 target 的五个分量为：
+target 的五个分量为：
 1. 相对距离
     $rel\_distance=\sqrt{(x_{dest}−x_{ego})^2+(y_{dest}−y_{ego})^2}$
 2. 相对角度的余弦
