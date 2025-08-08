@@ -34,24 +34,24 @@
 			Attention 机制自动建模模态间的相关性
 			Attention 公式（以单层为例）：
 			- QKV变换：$[Q,K,V]=X⋅W_{qkv}​$
-			其中 $X \ shape = (batch, n\_modal, embed\_size)$
-			self.to_qkv 是一个线性层，将输入映射到 3 × (heads × dim_head) 维度
-			然后 chunk(3, dim=-1) 分为 Q、K、V
-			2.多头拆分
-			$Q,K,V∈R^{batch×heads×n×dim_head}$
-			3.注意力分数计算
-			$scores=\frac{K_T}{\sqrt{dim_{head}}}$
-			`dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale`
-			4.softmax归一化
-			$α=softmax(scores,dim=−1)$
-			`attn = self.attend(dots)`
-			5.dropout（训练时生效）
-			`attn = self.dropout(attn)`
-			6.加权求和
-			$O=αV$
-			`out = torch.matmul(attn, v)`
-			7.多头合并
-			$O_{flat}=reshape(O,[batch,n,heads×dim_head])$
-			`out = rearrange(out, 'b h n d -> b n (h d)')`
-			8 输出线性层
-			$output=O_{flat}⋅W_{out}+b_{out}​$
+				其中 $X \ shape = (batch, n\_modal, embed\_size)$
+				self.to_qkv 是一个线性层，将输入映射到 3 × (heads × dim_head) 维度
+				然后 chunk(3, dim=-1) 分为 Q、K、V
+			- 多头拆分
+				$\large Q,K,V∈R^{batch×heads×n×dim_head}$
+			- 注意力分数计算
+				$scores=\frac{K_T}{\sqrt{dim_{head}}}$
+				`dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale`
+			- softmax归一化
+				$α=softmax(scores,dim=−1)$
+				`attn = self.attend(dots)`
+			- dropout（训练时生效）
+				`attn = self.dropout(attn)`
+			- 加权求和
+				$O=αV$
+				`out = torch.matmul(attn, v)`
+			- 多头合并
+				$O_{flat}=reshape(O,[batch,n,heads×dim_head])$
+				`out = rearrange(out, 'b h n d -> b n (h d)')`
+			- 输出线性层
+				$output=O_{flat}⋅W_{out}+b_{out}​$
