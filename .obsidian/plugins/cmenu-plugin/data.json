@@ -75,6 +75,11 @@
       "id": "editor:clear-formatting",
       "name": "清除格式",
       "icon": "lucide-eraser"
+    },
+    {
+      "id": "editor:insert-codeblock",
+      "name": "插入代码块",
+      "icon": "lucide-code"
     }
   ],
   "appendMethod": "workspace",

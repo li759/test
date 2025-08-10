@@ -46,6 +46,8 @@ $H^′(t)=a_1​+2a_2​t+3a_3​t^2.$
 $H(t)=y_{0} H_{00}(t)+y_{1} H_{01}(t)+M_{0} h^{2} H_{20}(t)+M_{1} h^{2} H_{21}(t),$
 再把$1/2$吸收到整体系数，就得到常见的
 $H(t)=y_{0}\left(1-3 t^{2}+2 t^{3}\right)+y_{1}\left(3 t^{2}-2 t^{3}\right)+\frac{h^{2}}{6}\left[\left(t^{3}-t\right) M_{0}+\left(t^{3}-t\right) M_{1}\right] .$
+把基函数加权叠加：
+
 ![[Pasted image 20250730102558.png]]
 ![[Pasted image 20250730102629.png]]
 
