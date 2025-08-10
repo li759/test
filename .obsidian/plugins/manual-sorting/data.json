@@ -42,7 +42,10 @@
       "sac_training/train_HOPE_sac.input.img_data.md",
       "sac_training/train_HOPE_sac.input.target_data.md",
       "sac_training/train_HOPE_sac.input.Action_Mask.md",
-      "sac_training/network_process.md",
+      "sac_training/network.md",
+      "sac_training/network.Critic（双Q网络）.md",
+      "sac_training/network.Actor（策略网络）.md",
+      "sac_training/network.温度系数 α 的自适应机制.md",
       "sac_training/cubic-spline.md",
       "sac_training/math.md"
     ]

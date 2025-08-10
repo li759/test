@@ -83,10 +83,10 @@ def __init__(self) -> None:
 				#使用动作掩码确保安全动作
 		        action_mask = obs['action_mask']
 		        valid_indices = np.where(action_mask > 0.2)[0]
-		        # ... 动作验证逻辑
+# ... 动作验证逻辑
 		        log_prob = parking_agent.get_log_prob(obs, action)
 		    else:
-		        # 训练阶段：使用智能体决策
+# 训练阶段：使用智能体决策
 		        action, log_prob = parking_agent.get_action(obs)
 			#环境步进
 		    next_obs, reward, done, info = env.step(action)
