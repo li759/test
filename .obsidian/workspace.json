@@ -21,49 +21,18 @@
             "id": "c0585440a869b1f8",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "qpollo.modules.planning.canvas",
-                "viewState": {
-                  "x": -282.3384339570238,
-                  "y": -701.7527798904947,
-                  "zoom": -0.38241464667845176
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "qpollo.modules.planning"
-            }
-          },
-          {
-            "id": "1137f49bb6ff9f22",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
-                "file": "sac_training/network.Critic（双Q网络）.md",
+                "file": "sac_training/train_HOPE_sac.input.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "network.Critic（双Q网络）"
-            }
-          },
-          {
-            "id": "1dd9077a1d37db26",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "sac_training/network.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "network"
+              "title": "train_HOPE_sac.input"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -130,8 +99,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 323.5124969482422,
-    "collapsed": true
+    "width": 323.5124969482422
   },
   "right": {
     "id": "6b4e7717a6ea7a5f",
@@ -249,16 +217,17 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "1137f49bb6ff9f22",
+  "active": "c0585440a869b1f8",
   "lastOpenFiles": [
-    "sac_training/network.md",
-    "sac_training/network.温度系数 α 的自适应机制.md",
+    "sac_training/未命名.canvas",
+    "sac_training/train_HOPE_sac.md",
     "sac_training/network.Actor（策略网络）.md",
+    "qpollo.modules.planning.canvas",
+    "sac_training/network.温度系数 α 的自适应机制.md",
     "sac_training/network.Critic（双Q网络）.md",
+    "sac_training/network.md",
     "sac_training/cubic-spline.md",
     "sac_training/math.md",
-    "sac_training/train_HOPE_sac.md",
-    "qpollo.modules.planning.canvas",
     "sac_training/train_HOPE_sac.input.md",
     "sac_training/train_HOPE_sac.input.lidar_data.md",
     "sac_training/train_HOPE_sac.input.img_data.md",
@@ -288,7 +257,6 @@
     "上级笔记.md",
     "PKM.Obsidian.DendronTree.md.md",
     "pkm.obsidian.md",
-    "pkm.md",
     "obsidian左侧文件夹显示实现包含关系的插件.canvas",
     "apollo",
     "copilot-custom-prompts",

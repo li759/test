@@ -1,0 +1,6 @@
+/* 禁止 Canvas 把 Mermaid 栅格化 */
+.canvas-node-content .mermaid {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    contain: layout style paint !important; /* 强制矢量层 */
+}

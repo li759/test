@@ -36,6 +36,7 @@
     ],
     "Excalidraw": [],
     "sac_training": [
+      "sac_training/未命名.canvas",
       "sac_training/train_HOPE_sac.md",
       "sac_training/train_HOPE_sac.input.md",
       "sac_training/train_HOPE_sac.input.lidar_data.md",
