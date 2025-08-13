@@ -1,42 +1,18 @@
 {
   "customFileOrder": {
     "/": [
+      "Control.md",
       "Excalidraw",
       "git_commit.sh",
-      "README.md",
-      "qpollo.modules.planning.canvas",
       "apollo.md",
       "Obsiden.md",
       "assets",
       "sac_training"
     ],
-    "assets": [
-      "assets/cubic-spline"
-    ],
-    "assets/cubic-spline": [
-      "assets/cubic-spline/Pasted image 20250730101042.png",
-      "assets/cubic-spline/Pasted image 20250730101947.png",
-      "assets/cubic-spline/Pasted image 20250730102119.png",
-      "assets/cubic-spline/Pasted image 20250730102135.png",
-      "assets/cubic-spline/Pasted image 20250730102153.png",
-      "assets/cubic-spline/Pasted image 20250730102210.png",
-      "assets/cubic-spline/Pasted image 20250730102227.png",
-      "assets/cubic-spline/Pasted image 20250730102250.png",
-      "assets/cubic-spline/Pasted image 20250730102522.png",
-      "assets/cubic-spline/Pasted image 20250730102543.png",
-      "assets/cubic-spline/Pasted image 20250730102558.png",
-      "assets/cubic-spline/Pasted image 20250730102629.png",
-      "assets/cubic-spline/Pasted image 20250730102701.png",
-      "assets/cubic-spline/Pasted image 20250730102716.png",
-      "assets/cubic-spline/Pasted image 20250730102731.png",
-      "assets/cubic-spline/Pasted image 20250730101928.png",
-      "assets/cubic-spline/09.jpg",
-      "assets/cubic-spline/Pasted image 20250730100719.png",
-      "assets/cubic-spline/file-20250729171151271.png"
-    ],
+    "assets": [],
     "Excalidraw": [],
     "sac_training": [
-      "sac_training/未命名.canvas",
+      "sac_training/Sac_Trainning.canvas",
       "sac_training/train_HOPE_sac.md",
       "sac_training/train_HOPE_sac.input.md",
       "sac_training/train_HOPE_sac.input.lidar_data.md",

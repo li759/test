@@ -34,7 +34,7 @@
 		对两套参数分别做 MSE：
 		`L_Q1 = E_D [ (Q_θ1(s,a) – y.detach())² ]   (2)`
 		`L_Q2 = E_D [ (Q_θ2(s,a) – y.detach())² ]   (3)
-		`loss_q1 = (q1 - y.detach()).pow(2).mean()`
+	`loss_q1 = (q1 - y.detach()).pow(2).mean()`
 		`loss_q2 = (q2 - y.detach()).pow(2).mean()`
 		`optimizer_c1.zero_grad(); loss_q1.backward(); optimizer_c1.step()`
 		`optimizer_c2.zero_grad(); loss_q2.backward(); optimizer_c2.step()`
