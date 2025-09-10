@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/swift_observation_builder.h"
+#include "modules/planning/open_space/rl_policy/observation_builder.h"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -30,7 +30,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-class SwiftObservationBuilderTest : public ::testing::Test {
+class ObservationBuilderTest : public ::testing::Test {
 protected:
   void SetUp() override {
     // Create test vehicle state
@@ -97,8 +97,8 @@ protected:
   double target_yaw_;
 };
 
-TEST_F(SwiftObservationBuilderTest, BuildObservationFromObstacles) {
-  SwiftObservationBuilder builder;
+TEST_F(ObservationBuilderTest, BuildObservationFromObstacles) {
+  ObservationBuilder builder;
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
@@ -127,8 +127,8 @@ TEST_F(SwiftObservationBuilderTest, BuildObservationFromObstacles) {
             SwiftObservation::GetObservationDim());
 }
 
-TEST_F(SwiftObservationBuilderTest, BuildObservationWithPointCloud) {
-  SwiftObservationBuilder builder;
+TEST_F(ObservationBuilderTest, BuildObservationWithPointCloud) {
+  ObservationBuilder builder;
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
@@ -153,8 +153,8 @@ TEST_F(SwiftObservationBuilderTest, BuildObservationWithPointCloud) {
             SwiftObservation::GetObservationDim());
 }
 
-TEST_F(SwiftObservationBuilderTest, BuildObservationWithParams) {
-  SwiftObservationBuilder builder;
+TEST_F(ObservationBuilderTest, BuildObservationWithParams) {
+  ObservationBuilder builder;
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
@@ -180,8 +180,8 @@ TEST_F(SwiftObservationBuilderTest, BuildObservationWithParams) {
             SwiftObservation::GetObservationDim());
 }
 
-TEST_F(SwiftObservationBuilderTest, GetObservationStats) {
-  SwiftObservationBuilder builder;
+TEST_F(ObservationBuilderTest, GetObservationStats) {
+  ObservationBuilder builder;
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
@@ -204,8 +204,8 @@ TEST_F(SwiftObservationBuilderTest, GetObservationStats) {
   EXPECT_TRUE(stats.find("ActionMask") != std::string::npos);
 }
 
-TEST_F(SwiftObservationBuilderTest, ValidateObservation) {
-  SwiftObservationBuilder builder;
+TEST_F(ObservationBuilderTest, ValidateObservation) {
+  ObservationBuilder builder;
 
   // Test with valid observation
   SwiftObservation valid_observation;

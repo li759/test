@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/extractors/swift_image_extractor.h"
+#include "modules/planning/open_space/rl_policy/image_extractor.h"
 
 #include <algorithm>
 #include <cmath>
@@ -26,7 +26,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-std::vector<float> SwiftImageExtractor::ExtractOccupancyGrid(
+std::vector<float> ImageExtractor::ExtractOccupancyGrid(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles, int width,
     int height, int channels, double view_range) {

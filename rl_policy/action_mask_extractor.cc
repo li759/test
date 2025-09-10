@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/extractors/swift_action_mask_extractor.h"
+#include "modules/planning/open_space/rl_policy/action_mask_extractor.h"
 
 #include <algorithm>
 #include <cmath>
@@ -28,7 +28,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-std::vector<float> SwiftActionMaskExtractor::ExtractActionMask(
+std::vector<float> ActionMaskExtractor::ExtractActionMask(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
     const std::shared_ptr<swift::planning::ReferenceLine> &reference_line) {

@@ -31,10 +31,11 @@
 #include "modules/planning/common/obstacle.h"
 #include "modules/planning/reference_line/reference_line.h"
 
-#include "modules/planning/open_space/rl_policy/extractors/swift_action_mask_extractor.h"
-#include "modules/planning/open_space/rl_policy/extractors/swift_image_extractor.h"
-#include "modules/planning/open_space/rl_policy/extractors/swift_lidar_extractor.h"
-#include "modules/planning/open_space/rl_policy/extractors/swift_target_extractor.h"
+#include "modules/planning/open_space/rl_policy/action_mask_extractor.h"
+#include "modules/planning/open_space/rl_policy/image_extractor.h"
+#include "modules/planning/open_space/rl_policy/lidar_extractor.h"
+#include "modules/planning/open_space/rl_policy/parking_endpoint_calculator.h"
+#include "modules/planning/open_space/rl_policy/target_extractor.h"
 
 namespace swift {
 namespace planning {
@@ -89,13 +90,13 @@ struct SwiftObservation {
 };
 
 /**
- * @class SwiftObservationBuilder
+ * @class ObservationBuilder
  * @brief Build complete RL observation from Swift data sources
  */
-class SwiftObservationBuilder {
+class ObservationBuilder {
 public:
-  SwiftObservationBuilder() = default;
-  ~SwiftObservationBuilder() = default;
+  ObservationBuilder() = default;
+  ~ObservationBuilder() = default;
 
   /**
    * @brief Build complete observation from Swift data
@@ -148,8 +149,31 @@ public:
       const swift::common::VehicleState &vehicle_state,
       const std::vector<swift::planning::Obstacle> &obstacles,
       const swift::common::math::Vec2d &target_position, double target_yaw,
-      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line,
+      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
+          nullptr,
       double lidar_max_range = 10.0, double img_view_range = 20.0);
+
+  /**
+   * @brief Build observation from parking slot information
+   * @param point_cloud Swift point cloud data (optional)
+   * @param vehicle_state Current vehicle state
+   * @param obstacles List of obstacles
+   * @param parking_slot Parking slot information
+   * @param reference_line Reference line (optional)
+   * @param lidar_max_range Maximum lidar range (default: 10.0m)
+   * @param img_view_range Image view range (default: 20.0m)
+   * @param is_wheel_stop_valid Whether wheel stop is valid
+   * @return Complete SwiftObservation structure
+   */
+  SwiftObservation BuildObservationFromParkingSlot(
+      const swift::perception::base::PointDCloud &point_cloud,
+      const swift::common::VehicleState &vehicle_state,
+      const std::vector<swift::planning::Obstacle> &obstacles,
+      const ParkingSlot &parking_slot,
+      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
+          nullptr,
+      double lidar_max_range = 10.0, double img_view_range = 20.0,
+      bool is_wheel_stop_valid = false);
 
   /**
    * @brief Validate observation dimensions
@@ -167,10 +191,10 @@ public:
 
 private:
   // Component extractors
-  SwiftLidarExtractor lidar_extractor_;
-  SwiftTargetExtractor target_extractor_;
-  SwiftImageExtractor image_extractor_;
-  SwiftActionMaskExtractor action_mask_extractor_;
+  LidarExtractor lidar_extractor_;
+  TargetExtractor target_extractor_;
+  ImageExtractor image_extractor_;
+  ActionMaskExtractor action_mask_extractor_;
 
   // Default parameters
   static constexpr double kDefaultLidarMaxRange = 10.0;

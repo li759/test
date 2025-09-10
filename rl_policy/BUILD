@@ -3,11 +3,36 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 package(default_visibility = ["//visibility:public"])
 PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\"","-O2"]
 
+# Vehicle configuration manager
 cc_library(
-    name = "swift_lidar_extractor",
-    srcs = ["extractors/swift_lidar_extractor.cc"],
-    hdrs = ["base_configure.h",
-            "extractors/swift_lidar_extractor.h"],
+    name = "vehicle_config_manager",
+    srcs = ["vehicle_config_manager.cc"],
+    hdrs = ["base_configure.h", "vehicle_config_manager.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//core/common:log",
+        "//modules/common/math",
+    ],
+)
+
+# Parking endpoint calculator
+cc_library(
+    name = "parking_endpoint_calculator",
+    srcs = ["parking_endpoint_calculator.cc"],
+    hdrs = ["base_configure.h", "parking_endpoint_calculator.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//core/common:log",
+        "//modules/common/math",
+        ":vehicle_config_manager",
+    ],
+)
+
+# Data extractors
+cc_library(
+    name = "lidar_extractor",
+    srcs = ["lidar_extractor.cc"],
+    hdrs = ["base_configure.h", "lidar_extractor.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
@@ -19,23 +44,22 @@ cc_library(
 )
 
 cc_library(
-    name = "swift_target_extractor",
-    srcs = ["extractors/swift_target_extractor.cc"],
-    hdrs = ["base_configure.h",
-            "extractors/swift_target_extractor.h"],
+    name = "target_extractor",
+    srcs = ["target_extractor.cc"],
+    hdrs = ["base_configure.h", "target_extractor.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
         "//modules/common/math",
         "//modules/common/vehicle_state:vehicle_state_provider",
+        ":parking_endpoint_calculator",
     ],
 )
 
 cc_library(
-    name = "swift_image_extractor",
-    srcs = ["extractors/swift_image_extractor.cc"],
-    hdrs = ["base_configure.h",
-            "extractors/swift_image_extractor.h"],
+    name = "image_extractor",
+    srcs = ["image_extractor.cc"],
+    hdrs = ["base_configure.h", "image_extractor.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
@@ -46,10 +70,9 @@ cc_library(
 )
 
 cc_library(
-    name = "swift_action_mask_extractor",
-    srcs = ["extractors/swift_action_mask_extractor.cc"],
-    hdrs = ["base_configure.h",
-            "extractors/swift_action_mask_extractor.h"],
+    name = "action_mask_extractor",
+    srcs = ["action_mask_extractor.cc"],
+    hdrs = ["base_configure.h", "action_mask_extractor.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
@@ -60,17 +83,18 @@ cc_library(
     ],
 )
 
+# Core observation builder
 cc_library(
-    name = "swift_observation_builder",
-    srcs = ["swift_observation_builder.cc"],
-    hdrs = ["base_configure.h",
-            "swift_observation_builder.h"],
+    name = "observation_builder",
+    srcs = ["observation_builder.cc"],
+    hdrs = ["base_configure.h", "observation_builder.h"],
     copts = PLANNING_COPTS,
     deps = [
-        ":swift_lidar_extractor",
-        ":swift_target_extractor", 
-        ":swift_image_extractor",
-        ":swift_action_mask_extractor",
+        ":lidar_extractor",
+        ":target_extractor", 
+        ":image_extractor",
+        ":action_mask_extractor",
+        ":parking_endpoint_calculator",
         "//core/common:log",
         "//modules/common/math",
         "//modules/common/vehicle_state:vehicle_state_provider",
@@ -80,14 +104,14 @@ cc_library(
     ],
 )
 
+# HOPE adapter
 cc_library(
-    name = "swift_to_hope_adapter",
-    srcs = ["swift_to_hope_adapter.cc"],
-    hdrs = ["base_configure.h",
-            "swift_to_hope_adapter.h"],
+    name = "to_hope_adapter",
+    srcs = ["to_hope_adapter.cc"],
+    hdrs = ["base_configure.h", "to_hope_adapter.h"],
     copts = PLANNING_COPTS,
     deps = [
-        ":swift_observation_builder",
+        ":observation_builder",
         "//core/common:log",
         "//modules/common/math",
         "//modules/common/vehicle_state:vehicle_state_provider",
@@ -95,31 +119,49 @@ cc_library(
     ],
 )
 
+# Utility library combining all extractors
 cc_library(
     name = "rl_policy_utils",
     copts = PLANNING_COPTS,
     deps = [
-        ":swift_lidar_extractor",
-        ":swift_target_extractor",
-        ":swift_image_extractor", 
-        ":swift_action_mask_extractor",
-        ":swift_observation_builder",
-        ":swift_to_hope_adapter",
+        ":lidar_extractor",
+        ":target_extractor",
+        ":image_extractor", 
+        ":action_mask_extractor",
+        ":parking_endpoint_calculator",
+        ":observation_builder",
+        ":to_hope_adapter",
+        ":vehicle_config_manager",
     ],
 )
 
+# Tests
 cc_test(
-    name = "swift_observation_builder_test",
+    name = "observation_builder_test",
     size = "small",
-    srcs = ["swift_observation_builder_test.cc"],
+    srcs = ["observation_builder_test.cc"],
     copts = PLANNING_COPTS,
     deps = [
-        ":swift_observation_builder",
+        ":observation_builder",
         "//core/common:log",
         "//modules/common/math",
         "//modules/common/vehicle_state:vehicle_state_provider",
         "//modules/perception/base:point_cloud",
         "//modules/planning/common:obstacle",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "parking_endpoint_calculator_test",
+    size = "small",
+    srcs = ["parking_endpoint_calculator_test.cc"],
+    copts = PLANNING_COPTS,
+    deps = [
+        ":parking_endpoint_calculator",
+        ":vehicle_config_manager",
+        "//core/common:log",
+        "//modules/common/math",
         "@com_google_googletest//:gtest_main",
     ],
 )

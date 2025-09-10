@@ -15,10 +15,12 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/extractors/swift_target_extractor.h"
+#include "modules/planning/open_space/rl_policy/target_extractor.h"
 
 #include <algorithm>
 #include <cmath>
+
+#include "core/common/log.h"
 
 namespace swift {
 namespace planning {
@@ -33,7 +35,7 @@ TargetInfo SwiftTargetExtractor::ExtractTargetInfo(
                                         target_yaw, 0.0);
 }
 
-TargetInfo SwiftTargetExtractor::ExtractTargetInfoWithCurvature(
+TargetInfo TargetExtractor::ExtractTargetInfoWithCurvature(
     const swift::common::VehicleState &vehicle_state,
     const swift::common::math::Vec2d &target_position, double target_yaw,
     double reference_curvature) {
@@ -103,6 +105,30 @@ double SwiftTargetExtractor::NormalizeAngle(double angle) {
     angle += 2.0 * M_PI;
   }
   return angle;
+}
+
+TargetInfo TargetExtractor::ExtractTargetInfoFromParkingSlot(
+    const swift::common::VehicleState &vehicle_state,
+    const ParkingSlot &parking_slot, const std::vector<ObstacleInfo> &obstacles,
+    bool is_wheel_stop_valid) {
+
+  // Calculate parking endpoint using APA planner logic
+  ParkingEndpoint endpoint = parking_calculator_.CalculateParkingEndpoint(
+      parking_slot, obstacles, is_wheel_stop_valid);
+
+  if (!endpoint.is_valid) {
+    AERROR << "Failed to calculate parking endpoint";
+    return TargetInfo(); // Return default invalid target
+  }
+
+  // Convert parking endpoint to target position
+  swift::common::math::Vec2d target_position(endpoint.position.x(),
+                                             endpoint.position.y());
+  double target_yaw = endpoint.yaw;
+
+  // Extract target information using existing method
+  return ExtractTargetInfoWithCurvature(vehicle_state, target_position,
+                                        target_yaw, 0.0);
 }
 
 } // namespace rl_policy

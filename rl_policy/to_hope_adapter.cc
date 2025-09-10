@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/swift_to_hope_adapter.h"
+#include "modules/planning/open_space/rl_policy/to_hope_adapter.h"
 
 #include <algorithm>
 #include <cmath>
@@ -27,8 +27,8 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-std::vector<float> SwiftToHopeAdapter::ConvertToHopeObservation(
-    const SwiftObservation &swift_obs) {
+std::vector<float>
+ToHopeAdapter::ConvertToHopeObservation(const SwiftObservation &swift_obs) {
   // Swift observation is already in the correct format (12455 dimensions)
   // Just return the flattened vector
   return swift_obs.flattened;

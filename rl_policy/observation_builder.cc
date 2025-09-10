@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/swift_observation_builder.h"
+#include "modules/planning/open_space/rl_policy/observation_builder.h"
 
 #include <algorithm>
 #include <numeric>
@@ -26,7 +26,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-SwiftObservation SwiftObservationBuilder::BuildObservation(
+SwiftObservation ObservationBuilder::BuildObservation(
     const swift::perception::base::PointDCloud &point_cloud,
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
@@ -87,7 +87,7 @@ SwiftObservation SwiftObservationBuilder::BuildObservationWithParams(
   return observation;
 }
 
-bool SwiftObservationBuilder::ValidateObservation(
+bool ObservationBuilder::ValidateObservation(
     const SwiftObservation &observation) {
   // Check dimensions
   if (observation.lidar.size() != SwiftObservation::GetLidarDim()) {
@@ -124,8 +124,8 @@ bool SwiftObservationBuilder::ValidateObservation(
   return true;
 }
 
-std::string SwiftObservationBuilder::GetObservationStats(
-    const SwiftObservation &observation) {
+std::string
+ObservationBuilder::GetObservationStats(const SwiftObservation &observation) {
   std::stringstream ss;
 
   // Lidar statistics
@@ -165,6 +165,52 @@ std::string SwiftObservationBuilder::GetObservationStats(
   ss << "  Total dim: " << observation.flattened.size() << "\n";
 
   return ss.str();
+}
+
+SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
+    const swift::perception::base::PointDCloud &point_cloud,
+    const swift::common::VehicleState &vehicle_state,
+    const std::vector<swift::planning::Obstacle> &obstacles,
+    const ParkingSlot &parking_slot,
+    const std::shared_ptr<swift::planning::ReferenceLine> &reference_line,
+    double lidar_max_range, double img_view_range, bool is_wheel_stop_valid) {
+
+  SwiftObservation observation;
+
+  // Convert Swift obstacles to ObstacleInfo format
+  std::vector<ObstacleInfo> obstacle_infos;
+  for (const auto &obstacle : obstacles) {
+    ObstacleInfo info;
+    info.position.set_x(obstacle.PerceptionBoundingBox().center().x());
+    info.position.set_y(obstacle.PerceptionBoundingBox().center().y());
+    info.width = obstacle.PerceptionBoundingBox().width();
+    info.length = obstacle.PerceptionBoundingBox().length();
+    info.yaw = obstacle.PerceptionBoundingBox().heading();
+    obstacle_infos.push_back(info);
+  }
+
+  // Extract target information from parking slot
+  observation.target = target_extractor_.ExtractTargetInfoFromParkingSlot(
+      vehicle_state, parking_slot, obstacle_infos, is_wheel_stop_valid);
+
+  // Extract lidar data
+  observation.lidar =
+      lidar_extractor_.ExtractLidarBeams(point_cloud, vehicle_state, obstacles,
+                                         lidar_max_range, kDefaultLidarBeams);
+
+  // Extract occupancy grid image
+  observation.img = image_extractor_.ExtractOccupancyGrid(
+      vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight,
+      kDefaultImgChannels, img_view_range);
+
+  // Extract action mask
+  observation.action_mask = action_mask_extractor_.ExtractActionMask(
+      vehicle_state, obstacles, reference_line);
+
+  // Flatten all components
+  observation.Flatten();
+
+  return observation;
 }
 
 } // namespace rl_policy

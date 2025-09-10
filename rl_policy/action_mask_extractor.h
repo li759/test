@@ -38,10 +38,10 @@ namespace rl_policy {
  * @class SwiftActionMaskExtractor
  * @brief Extract 42-dimensional action mask from Swift constraints
  */
-class SwiftActionMaskExtractor {
+class ActionMaskExtractor {
 public:
-  SwiftActionMaskExtractor() = default;
-  ~SwiftActionMaskExtractor() = default;
+  ActionMaskExtractor() = default;
+  ~ActionMaskExtractor() = default;
 
   /**
    * @brief Extract action mask from vehicle state and obstacles

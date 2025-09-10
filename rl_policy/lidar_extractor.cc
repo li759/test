@@ -15,7 +15,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/open_space/rl_policy/extractors/swift_lidar_extractor.h"
+#include "modules/planning/open_space/rl_policy/lidar_extractor.h"
 
 #include <algorithm>
 #include <cmath>
@@ -29,7 +29,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-std::vector<float> SwiftLidarExtractor::ExtractLidarBeams(
+std::vector<float> LidarExtractor::ExtractLidarBeams(
     const swift::perception::base::PointDCloud &point_cloud,
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles, double max_range,

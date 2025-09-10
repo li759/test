@@ -27,7 +27,7 @@
 
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/planning/common/obstacle.h"
-#include "modules/planning/open_space/rl_policy/swift_observation_builder.h"
+#include "modules/planning/open_space/rl_policy/observation_builder.h"
 
 namespace swift {
 namespace planning {
@@ -73,13 +73,13 @@ struct HopeObstacle {
 };
 
 /**
- * @class SwiftToHopeAdapter
+ * @class ToHopeAdapter
  * @brief Convert Swift data to HOPE+ format for RL inference
  */
-class SwiftToHopeAdapter {
+class ToHopeAdapter {
 public:
-  SwiftToHopeAdapter() = default;
-  ~SwiftToHopeAdapter() = default;
+  ToHopeAdapter() = default;
+  ~ToHopeAdapter() = default;
 
   /**
    * @brief Convert Swift observation to HOPE+ format

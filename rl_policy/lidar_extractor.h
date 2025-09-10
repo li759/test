@@ -35,14 +35,14 @@ namespace open_space {
 namespace rl_policy {
 
 /**
- * @class SwiftLidarExtractor
+ * @class LidarExtractor
  * @brief Extract 120-dimensional lidar data from Swift point cloud and
  * obstacles
  */
-class SwiftLidarExtractor {
+class LidarExtractor {
 public:
-  SwiftLidarExtractor() = default;
-  ~SwiftLidarExtractor() = default;
+  LidarExtractor() = default;
+  ~LidarExtractor() = default;
 
   /**
    * @brief Extract lidar beams from Swift point cloud and obstacles

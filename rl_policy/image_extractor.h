@@ -38,10 +38,10 @@ namespace rl_policy {
  * @class SwiftImageExtractor
  * @brief Extract 3x64x64 occupancy grid image from Swift obstacles
  */
-class SwiftImageExtractor {
+class ImageExtractor {
 public:
-  SwiftImageExtractor() = default;
-  ~SwiftImageExtractor() = default;
+  ImageExtractor() = default;
+  ~ImageExtractor() = default;
 
   /**
    * @brief Extract occupancy grid image from obstacles

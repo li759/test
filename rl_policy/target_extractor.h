@@ -26,6 +26,7 @@
 
 #include "modules/common/math/vec2d.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
+#include "modules/planning/open_space/rl_policy/parking_endpoint_calculator.h"
 
 namespace swift {
 namespace planning {
@@ -57,10 +58,10 @@ struct TargetInfo {
  * @class SwiftTargetExtractor
  * @brief Extract 5-dimensional target information from Swift vehicle state
  */
-class SwiftTargetExtractor {
+class TargetExtractor {
 public:
-  SwiftTargetExtractor() = default;
-  ~SwiftTargetExtractor() = default;
+  TargetExtractor() = default;
+  ~TargetExtractor() = default;
 
   /**
    * @brief Extract target information from vehicle state and target position
@@ -86,6 +87,20 @@ public:
       const swift::common::VehicleState &vehicle_state,
       const swift::common::math::Vec2d &target_position, double target_yaw,
       double reference_curvature = 0.0);
+
+  /**
+   * @brief Extract target information from parking slot
+   * @param vehicle_state Current vehicle state
+   * @param parking_slot Parking slot information
+   * @param obstacles Obstacle information for optimization
+   * @param is_wheel_stop_valid Whether wheel stop is valid
+   * @return TargetInfo structure with 5-dimensional target data
+   */
+  TargetInfo ExtractTargetInfoFromParkingSlot(
+      const swift::common::VehicleState &vehicle_state,
+      const ParkingSlot &parking_slot,
+      const std::vector<ObstacleInfo> &obstacles = {},
+      bool is_wheel_stop_valid = false);
 
   /**
    * @brief Convert TargetInfo to vector format for RL observation
@@ -119,6 +134,9 @@ private:
    * @return Normalized angle (rad)
    */
   static double NormalizeAngle(double angle);
+
+  // Parking endpoint calculator
+  ParkingEndpointCalculator parking_calculator_;
 };
 
 } // namespace rl_policy
