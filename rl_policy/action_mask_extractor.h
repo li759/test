@@ -35,7 +35,7 @@ namespace open_space {
 namespace rl_policy {
 
 /**
- * @class SwiftActionMaskExtractor
+ * @class ActionMaskExtractor
  * @brief Extract 42-dimensional action mask from Swift constraints
  */
 class ActionMaskExtractor {

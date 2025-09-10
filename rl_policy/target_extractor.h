@@ -55,7 +55,7 @@ struct TargetInfo {
 };
 
 /**
- * @class SwiftTargetExtractor
+ * @class TargetExtractor
  * @brief Extract 5-dimensional target information from Swift vehicle state
  */
 class TargetExtractor {

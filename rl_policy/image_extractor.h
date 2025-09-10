@@ -35,7 +35,7 @@ namespace open_space {
 namespace rl_policy {
 
 /**
- * @class SwiftImageExtractor
+ * @class ImageExtractor
  * @brief Extract 3x64x64 occupancy grid image from Swift obstacles
  */
 class ImageExtractor {

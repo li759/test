@@ -41,7 +41,7 @@ std::vector<float> ActionMaskExtractor::ExtractActionMask(
       vehicle_state, obstacles, steering_actions, step_lengths, reference_line);
 }
 
-std::vector<float> SwiftActionMaskExtractor::ExtractActionMaskWithCustomActions(
+std::vector<float> ActionMaskExtractor::ExtractActionMaskWithCustomActions(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
     const std::vector<double> &steering_actions,
@@ -63,11 +63,11 @@ std::vector<float> SwiftActionMaskExtractor::ExtractActionMaskWithCustomActions(
 }
 
 std::vector<float>
-SwiftActionMaskExtractor::CreateDefaultActionMask(int num_actions) {
+ActionMaskExtractor::CreateDefaultActionMask(int num_actions) {
   return std::vector<float>(num_actions, 1.0f);
 }
 
-bool SwiftActionMaskExtractor::IsActionValid(
+bool ActionMaskExtractor::IsActionValid(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
     double steering_angle, double step_length,
@@ -90,7 +90,7 @@ bool SwiftActionMaskExtractor::IsActionValid(
   return true;
 }
 
-bool SwiftActionMaskExtractor::CheckCollision(
+bool ActionMaskExtractor::CheckCollision(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
     double steering_angle, double step_length) {
@@ -117,7 +117,7 @@ bool SwiftActionMaskExtractor::CheckCollision(
   return true; // No collision
 }
 
-swift::common::VehicleState SwiftActionMaskExtractor::PredictVehicleState(
+swift::common::VehicleState ActionMaskExtractor::PredictVehicleState(
     const swift::common::VehicleState &vehicle_state, double steering_angle,
     double step_length) {
 
@@ -148,7 +148,7 @@ swift::common::VehicleState SwiftActionMaskExtractor::PredictVehicleState(
   return predicted_state;
 }
 
-bool SwiftActionMaskExtractor::CheckReferenceLineBounds(
+bool ActionMaskExtractor::CheckReferenceLineBounds(
     const swift::common::VehicleState &predicted_state,
     const std::shared_ptr<swift::planning::ReferenceLine> &reference_line) {
 
@@ -171,7 +171,7 @@ bool SwiftActionMaskExtractor::CheckReferenceLineBounds(
   return true; // Simplified - always return true for now
 }
 
-void SwiftActionMaskExtractor::GetDefaultActionSpace(
+void ActionMaskExtractor::GetDefaultActionSpace(
     std::vector<double> &steering_actions, std::vector<double> &step_lengths) {
 
   // Generate steering actions from -1.0 to 1.0

@@ -37,7 +37,7 @@ std::vector<float> ImageExtractor::ExtractOccupancyGrid(
                                             resolution);
 }
 
-std::vector<float> SwiftImageExtractor::ExtractOccupancyGridWithResolution(
+std::vector<float> ImageExtractor::ExtractOccupancyGridWithResolution(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles, int width,
     int height, int channels, double view_range, double resolution) {
@@ -58,12 +58,12 @@ std::vector<float> SwiftImageExtractor::ExtractOccupancyGridWithResolution(
   return grid;
 }
 
-std::vector<float> SwiftImageExtractor::CreateEmptyGrid(int width, int height,
-                                                        int channels) {
+std::vector<float> ImageExtractor::CreateEmptyGrid(int width, int height,
+                                                   int channels) {
   return std::vector<float>(width * height * channels, 0.0f);
 }
 
-void SwiftImageExtractor::RasterizeObstacle(
+void ImageExtractor::RasterizeObstacle(
     const swift::planning::Obstacle &obstacle, std::vector<float> &grid,
     int width, int height, double resolution, double vehicle_x,
     double vehicle_y, double vehicle_yaw) {
@@ -73,7 +73,7 @@ void SwiftImageExtractor::RasterizeObstacle(
                        vehicle_y, vehicle_yaw);
 }
 
-void SwiftImageExtractor::RasterizeBoundingBox(
+void ImageExtractor::RasterizeBoundingBox(
     const swift::common::math::Box2d &bounding_box, std::vector<float> &grid,
     int width, int height, double resolution, double vehicle_x,
     double vehicle_y, double vehicle_yaw) {
@@ -132,7 +132,7 @@ void SwiftImageExtractor::RasterizeBoundingBox(
   }
 }
 
-std::pair<int, int> SwiftImageExtractor::WorldToGrid(
+std::pair<int, int> ImageExtractor::WorldToGrid(
     double world_x, double world_y, double vehicle_x, double vehicle_y,
     double vehicle_yaw, double resolution, int grid_width, int grid_height) {
 
@@ -155,8 +155,8 @@ std::pair<int, int> SwiftImageExtractor::WorldToGrid(
   return std::make_pair(grid_x, grid_y);
 }
 
-bool SwiftImageExtractor::IsValidGridCoordinate(int grid_x, int grid_y,
-                                                int width, int height) {
+bool ImageExtractor::IsValidGridCoordinate(int grid_x, int grid_y, int width,
+                                           int height) {
   return grid_x >= 0 && grid_x < width && grid_y >= 0 && grid_y < height;
 }
 

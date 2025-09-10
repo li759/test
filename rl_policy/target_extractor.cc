@@ -27,7 +27,7 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-TargetInfo SwiftTargetExtractor::ExtractTargetInfo(
+TargetInfo TargetExtractor::ExtractTargetInfo(
     const swift::common::VehicleState &vehicle_state,
     const swift::common::math::Vec2d &target_position, double target_yaw) {
 
@@ -58,8 +58,7 @@ TargetInfo TargetExtractor::ExtractTargetInfoWithCurvature(
                     static_cast<float>(reference_curvature));
 }
 
-std::vector<float>
-SwiftTargetExtractor::ToVector(const TargetInfo &target_info) {
+std::vector<float> TargetExtractor::ToVector(const TargetInfo &target_info) {
   std::vector<float> target_vector(5);
   target_vector[0] = target_info.dx;
   target_vector[1] = target_info.dy;
@@ -69,13 +68,13 @@ SwiftTargetExtractor::ToVector(const TargetInfo &target_info) {
   return target_vector;
 }
 
-double SwiftTargetExtractor::CalculateHeadingError(double current_yaw,
-                                                   double target_yaw) {
+double TargetExtractor::CalculateHeadingError(double current_yaw,
+                                              double target_yaw) {
   double error = target_yaw - current_yaw;
   return NormalizeAngle(error);
 }
 
-std::pair<double, double> SwiftTargetExtractor::CalculateRelativePosition(
+std::pair<double, double> TargetExtractor::CalculateRelativePosition(
     const swift::common::VehicleState &vehicle_state,
     const swift::common::math::Vec2d &target_position) {
 
@@ -97,7 +96,7 @@ std::pair<double, double> SwiftTargetExtractor::CalculateRelativePosition(
   return std::make_pair(dx, dy);
 }
 
-double SwiftTargetExtractor::NormalizeAngle(double angle) {
+double TargetExtractor::NormalizeAngle(double angle) {
   while (angle > M_PI) {
     angle -= 2.0 * M_PI;
   }

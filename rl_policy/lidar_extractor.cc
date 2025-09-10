@@ -51,7 +51,7 @@ std::vector<float> LidarExtractor::ExtractLidarBeams(
                                         num_beams, fov);
 }
 
-std::vector<float> SwiftLidarExtractor::ExtractLidarBeamsFromObstacles(
+std::vector<float> LidarExtractor::ExtractLidarBeamsFromObstacles(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles, double max_range,
     int num_beams, double fov) {
@@ -75,7 +75,7 @@ std::vector<float> SwiftLidarExtractor::ExtractLidarBeamsFromObstacles(
   return lidar_beams;
 }
 
-double SwiftLidarExtractor::RaycastToObstacles(
+double LidarExtractor::RaycastToObstacles(
     double start_x, double start_y, double yaw, double angle,
     const std::vector<swift::planning::Obstacle> &obstacles, double max_range) {
 
@@ -96,7 +96,7 @@ double SwiftLidarExtractor::RaycastToObstacles(
   return min_distance;
 }
 
-double SwiftLidarExtractor::RayObstacleIntersection(
+double LidarExtractor::RayObstacleIntersection(
     double ray_start_x, double ray_start_y, double ray_end_x, double ray_end_y,
     const swift::planning::Obstacle &obstacle) {
 
@@ -153,7 +153,7 @@ double SwiftLidarExtractor::RayObstacleIntersection(
   return min_distance;
 }
 
-std::vector<float> SwiftLidarExtractor::ExtractFromPointCloud(
+std::vector<float> LidarExtractor::ExtractFromPointCloud(
     const swift::perception::base::PointDCloud &point_cloud,
     const swift::common::VehicleState &vehicle_state, double max_range,
     int num_beams, double fov) {
