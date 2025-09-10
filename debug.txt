@@ -1,5 +1,31 @@
-(13:39:00) ERROR: Skipping '//modules/planning/open_space/rl_policy/...': no targets found beneath 'modules/planning/open_space/rl_policy'
-(13:39:00) ERROR: no targets found beneath 'modules/planning/open_space/rl_policy'
-(13:39:00) INFO: Elapsed time: 3.237s
-(13:39:00) INFO: 0 processes.
-(13:39:00) FAILED: Build did NOT complete successfully (1 packages loaded)
+(16:39:43) ERROR: /work/rl_policy/swift/swift/modules/planning/open_space/rl_policy/BUILD:32:11: Compiling modules/planning/open_space/rl_policy/target_extractor.cc failed: (Exit 1): gcc failed: error executing command /usr/bin/gcc -MD -MF bazel-out/k8-dbg/bin/modules/planning/open_space/rl_policy/_objs/target_extractor/target_extractor.pic.d ... (remaining 349 arguments skipped)
+
+Use --sandbox_debug to see verbose messages from the sandbox
+modules/planning/open_space/rl_policy/target_extractor.cc:30:12: error: 'SwiftTargetExtractor' has not been declared
+   30 | TargetInfo SwiftTargetExtractor::ExtractTargetInfo(
+      |            ^~~~~~~~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc: In function 'swift::planning::open_space::rl_policy::TargetInfo swift::planning::open_space::rl_policy::ExtractTargetInfo(const swift::common::VehicleState&, const swift::common::math::Vec2d&, double)':
+modules/planning/open_space/rl_policy/target_extractor.cc:34:10: error: 'ExtractTargetInfoWithCurvature' was not declared in this scope
+   34 |   return ExtractTargetInfoWithCurvature(vehicle_state, target_position,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc: At global scope:
+modules/planning/open_space/rl_policy/target_extractor.cc:62:1: error: 'SwiftTargetExtractor' has not been declared
+   62 | SwiftTargetExtractor::ToVector(const TargetInfo &target_info) {
+      | ^~~~~~~~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc:72:8: error: 'SwiftTargetExtractor' has not been declared
+   72 | double SwiftTargetExtractor::CalculateHeadingError(double current_yaw,
+      |        ^~~~~~~~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc: In function 'double swift::planning::open_space::rl_policy::CalculateHeadingError(double, double)':
+modules/planning/open_space/rl_policy/target_extractor.cc:75:10: error: 'NormalizeAngle' was not declared in this scope
+   75 |   return NormalizeAngle(error);
+      |          ^~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc: At global scope:
+modules/planning/open_space/rl_policy/target_extractor.cc:78:27: error: 'SwiftTargetExtractor' has not been declared
+   78 | std::pair<double, double> SwiftTargetExtractor::CalculateRelativePosition(
+      |                           ^~~~~~~~~~~~~~~~~~~~
+modules/planning/open_space/rl_policy/target_extractor.cc:100:8: error: 'SwiftTargetExtractor' has not been declared
+  100 | double SwiftTargetExtractor::NormalizeAngle(double angle) {
+      |        ^~~~~~~~~~~~~~~~~~~~
+(16:39:43) INFO: Elapsed time: 9.110s, Critical Path: 3.05s
+(16:39:43) INFO: 4 processes: 4 internal.
+(16:39:43) FAILED: Build did NOT complete successfully
