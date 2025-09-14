@@ -1361,13 +1361,57 @@ Status OpenSpaceTrajectoryProvider::GenerateApaTrajectory(
   apa_planner_->OdomCallback(msg_Odome);
   apa_planner_->FsmCallBack(msg_ApaFsm);
 
-  // Q
+  // RL Policy Integration
   if (use_rl_policy_) {
     AINFO << "Using RL Policy for trajectory planning";
     try {
-      auto observation = observation_builder_->BuildObservation(
-          frame_->vehicle_state(), slot_polygon, Obs_list, frame_->obstacles());
+      // 从车位多边形获取目标位置
+      auto target_position = swift::common::math::Vec2d(
+          slot_polygon.GetCenter().x(), slot_polygon.GetCenter().y());
+
+      // 计算车位中心的角度（使用车位多边形的前两个点计算方向）
+      double target_yaw = 0.0;
+      if (slot_polygon.num_points() >= 2) {
+        auto p0 = slot_polygon.points().at(0);
+        auto p1 = slot_polygon.points().at(1);
+        target_yaw = std::atan2(p1.y() - p0.y(), p1.x() - p0.x());
+      }
+
+      // 创建空的点云数据（如果没有实际点云数据）
+      swift::perception::base::PointDCloud empty_point_cloud;
+
+      // 将 Polygon2d 转换为 ParkingSlot
+      swift::planning::open_space::rl_policy::ParkingSlot parking_slot;
+      if (slot_polygon.num_points() >= 4) {
+        parking_slot.p0 = slot_polygon.points().at(0);
+        parking_slot.p1 = slot_polygon.points().at(1);
+        parking_slot.p2 = slot_polygon.points().at(2);
+        parking_slot.p3 = slot_polygon.points().at(3);
+        parking_slot.angle = target_yaw;
+        parking_slot.width = slot_polygon.GetWidth();
+        parking_slot.type =
+            swift::planning::open_space::rl_policy::ParkingType::VERTICAL;
+      }
+
+      // 构建观察数据
+      auto observation = observation_builder_->BuildObservationFromParkingSlot(
+          empty_point_cloud, frame_->vehicle_state(), frame_->obstacles(),
+          parking_slot,
+          nullptr, // reference_line
+          10.0,    // lidar_max_range
+          20.0,    // img_view_range
+          false    // is_wheel_stop_valid
+      );
+
+      AINFO << "Built RL observation with dimensions: "
+            << observation.flattened.size();
+      AINFO << "Target position: (" << target_position.x() << ", "
+            << target_position.y() << ")";
+      AINFO << "Target yaw: " << target_yaw;
+
+      // 使用观察数据获取RL动作建议
       // auto action = hope_adapter_->GetAction(observation);
+
     } catch (const std::exception &e) {
       AERROR << "Error in RL Policy: " << e.what();
     }

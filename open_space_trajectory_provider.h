@@ -35,7 +35,9 @@
 #include "modules/planning/tasks/task.h"
 
 // 在头文件包含部分添加
+#include "modules/perception/base/point_cloud.h"
 #include "modules/planning/open_space/rl_policy/observation_builder.h"
+#include "modules/planning/open_space/rl_policy/parking_endpoint_calculator.h"
 #include "modules/planning/open_space/rl_policy/to_hope_adapter.h"
 
 namespace swift {
