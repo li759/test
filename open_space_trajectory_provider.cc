@@ -1361,7 +1361,7 @@ Status OpenSpaceTrajectoryProvider::GenerateApaTrajectory(
   apa_planner_->OdomCallback(msg_Odome);
   apa_planner_->FsmCallBack(msg_ApaFsm);
 
-  // RL Policy Integration
+  // Q
   if (use_rl_policy_) {
     AINFO << "Using RL Policy for trajectory planning";
     try {

@@ -34,7 +34,7 @@ ToHopeAdapter::ConvertToHopeObservation(const SwiftObservation &swift_obs) {
   return swift_obs.flattened;
 }
 
-HopeVehicleState SwiftToHopeAdapter::ConvertToHopeVehicleState(
+HopeVehicleState ToHopeAdapter::ConvertToHopeVehicleState(
     const swift::common::VehicleState &swift_state) {
 
   return HopeVehicleState(swift_state.x(), swift_state.y(),
@@ -43,7 +43,7 @@ HopeVehicleState SwiftToHopeAdapter::ConvertToHopeVehicleState(
   );
 }
 
-std::vector<HopeObstacle> SwiftToHopeAdapter::ConvertToHopeObstacles(
+std::vector<HopeObstacle> ToHopeAdapter::ConvertToHopeObstacles(
     const std::vector<swift::planning::Obstacle> &swift_obstacles) {
 
   std::vector<HopeObstacle> hope_obstacles;
@@ -63,8 +63,8 @@ std::vector<HopeObstacle> SwiftToHopeAdapter::ConvertToHopeObstacles(
   return hope_obstacles;
 }
 
-SwiftToHopeAdapter::SwiftAction SwiftToHopeAdapter::ConvertToSwiftAction(
-    const std::vector<float> &hope_action) {
+ToHopeAdapter::SwiftAction
+ToHopeAdapter::ConvertToSwiftAction(const std::vector<float> &hope_action) {
 
   if (hope_action.size() < 2) {
     return SwiftAction(0.0, 0.0);
@@ -83,7 +83,7 @@ SwiftToHopeAdapter::SwiftAction SwiftToHopeAdapter::ConvertToSwiftAction(
   return SwiftAction(steering_angle, step_length);
 }
 
-bool SwiftToHopeAdapter::ValidateHopeObservation(
+bool ToHopeAdapter::ValidateHopeObservation(
     const std::vector<float> &hope_obs) {
   // Check dimension
   if (hope_obs.size() != kHopeObservationDim) {
@@ -104,8 +104,8 @@ bool SwiftToHopeAdapter::ValidateHopeObservation(
   return true;
 }
 
-std::string SwiftToHopeAdapter::GetHopeObservationStats(
-    const std::vector<float> &hope_obs) {
+std::string
+ToHopeAdapter::GetHopeObservationStats(const std::vector<float> &hope_obs) {
   std::stringstream ss;
 
   if (hope_obs.size() != kHopeObservationDim) {
@@ -160,11 +160,11 @@ std::string SwiftToHopeAdapter::GetHopeObservationStats(
   return ss.str();
 }
 
-std::vector<float> SwiftToHopeAdapter::CreateEmptyHopeObservation() {
+std::vector<float> ToHopeAdapter::CreateEmptyHopeObservation() {
   return std::vector<float>(kHopeObservationDim, 0.0f);
 }
 
-double SwiftToHopeAdapter::NormalizeAngle(double angle) {
+double ToHopeAdapter::NormalizeAngle(double angle) {
   while (angle > M_PI) {
     angle -= 2.0 * M_PI;
   }

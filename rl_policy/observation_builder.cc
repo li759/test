@@ -38,7 +38,7 @@ SwiftObservation ObservationBuilder::BuildObservation(
       reference_line, kDefaultLidarMaxRange, kDefaultImgViewRange);
 }
 
-SwiftObservation SwiftObservationBuilder::BuildObservationFromObstacles(
+SwiftObservation ObservationBuilder::BuildObservationFromObstacles(
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
     const swift::common::math::Vec2d &target_position, double target_yaw,
@@ -52,7 +52,7 @@ SwiftObservation SwiftObservationBuilder::BuildObservationFromObstacles(
       reference_line, kDefaultLidarMaxRange, kDefaultImgViewRange);
 }
 
-SwiftObservation SwiftObservationBuilder::BuildObservationWithParams(
+SwiftObservation ObservationBuilder::BuildObservationWithParams(
     const swift::perception::base::PointDCloud &point_cloud,
     const swift::common::VehicleState &vehicle_state,
     const std::vector<swift::planning::Obstacle> &obstacles,
@@ -190,8 +190,9 @@ SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
   }
 
   // Extract target information from parking slot
-  observation.target = target_extractor_.ExtractTargetInfoFromParkingSlot(
+  TargetInfo target_info = target_extractor_.ExtractTargetInfoFromParkingSlot(
       vehicle_state, parking_slot, obstacle_infos, is_wheel_stop_valid);
+  observation.target = target_extractor_.ToVector(target_info);
 
   // Extract lidar data
   observation.lidar =
