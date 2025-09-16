@@ -97,7 +97,7 @@ public:
    * @return TargetInfo structure with 5-dimensional target data
    */
   TargetInfo ExtractTargetInfoFromParkingSlot(
-      const swift::common::VehicleState &vehicle_state,
+      const swift::common::VehicleStateProvider &vehicle_state,
       const ParkingSlot &parking_slot,
       const std::vector<ObstacleInfo> &obstacles = {},
       bool is_wheel_stop_valid = false);
