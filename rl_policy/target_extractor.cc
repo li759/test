@@ -59,12 +59,22 @@ TargetInfo TargetExtractor::ExtractTargetInfoWithCurvature(
 }
 
 std::vector<float> TargetExtractor::ToVector(const TargetInfo &target_info) {
+  // HOPE 表示: [rel_distance, cos(rel_angle), sin(rel_angle), cos(rel_dest_heading), cos(rel_dest_heading)]
+  // 1) 车辆坐标系下相对位姿: (dx, dy) 已在上游计算
+  const double dx = static_cast<double>(target_info.dx);
+  const double dy = static_cast<double>(target_info.dy);
+  const double rel_distance = std::sqrt(dx * dx + dy * dy);
+  const double rel_angle = std::atan2(dy, dx);
+
+
+  const double rel_dest_heading = static_cast<double>(target_info.heading_error);
+
   std::vector<float> target_vector(5);
-  target_vector[0] = target_info.dx;
-  target_vector[1] = target_info.dy;
-  target_vector[2] = target_info.heading_error;
-  target_vector[3] = target_info.current_speed;
-  target_vector[4] = target_info.curvature;
+  target_vector[0] = static_cast<float>(rel_distance);
+  target_vector[1] = static_cast<float>(std::cos(rel_angle));
+  target_vector[2] = static_cast<float>(std::sin(rel_angle));
+  target_vector[3] = static_cast<float>(std::cos(rel_dest_heading));
+  target_vector[4] = static_cast<float>(std::cos(rel_dest_heading)); // 按你提供的HOPE格式保留两次cos
   return target_vector;
 }
 

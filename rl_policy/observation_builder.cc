@@ -16,6 +16,7 @@
  *****************************************************************************/
 
 #include "modules/planning/open_space/rl_policy/observation_builder.h"
+#include "modules/planning/open_space/rl_policy/lidar_action_mask.h"
 
 #include <algorithm>
 #include <numeric>
@@ -77,9 +78,9 @@ SwiftObservation ObservationBuilder::BuildObservationWithParams(
       vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight,
       kDefaultImgChannels, img_view_range);
 
-  // Extract action mask
-  observation.action_mask = action_mask_extractor_.ExtractActionMask(
-      vehicle_state, obstacles, reference_line);
+  // Extract action mask (use integrated extractor from lidar)
+  observation.action_mask = action_mask_extractor_.ExtractActionMaskFromLidar(
+      observation.lidar);
 
   // Flatten all components
   observation.Flatten();
@@ -204,9 +205,9 @@ SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
       vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight,
       kDefaultImgChannels, img_view_range);
 
-  // Extract action mask
-  observation.action_mask = action_mask_extractor_.ExtractActionMask(
-      vehicle_state, obstacles, reference_line);
+  // Extract action mask (use integrated extractor from lidar)
+  observation.action_mask = action_mask_extractor_.ExtractActionMaskFromLidar(
+      observation.lidar);
 
   // Flatten all components
   observation.Flatten();

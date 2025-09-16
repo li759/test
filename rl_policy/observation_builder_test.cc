@@ -61,13 +61,13 @@ protected:
     perception_obs.set_width(2.0);
     perception_obs.set_height(1.5);
     perception_obs.set_theta(0.0);
-    perception_obs.set_velocity_x(0.0);
-    perception_obs.set_velocity_y(0.0);
-    perception_obs.set_velocity_z(0.0);
+    perception_obs.mutable_velocity()->set_x(0.0);
+    perception_obs.mutable_velocity()->set_y(0.0);
+    perception_obs.mutable_velocity()->set_z(0.0);
 
     auto obstacle = std::make_unique<swift::planning::Obstacle>(
         "test_obstacle", perception_obs,
-        swift::prediction::ObstaclePriority::Priority::NORMAL, true);
+        swift::prediction::ObstaclePriority::NORMAL, true);
 
     obstacles_.push_back(std::move(obstacle));
   }

@@ -1365,9 +1365,14 @@ Status OpenSpaceTrajectoryProvider::GenerateApaTrajectory(
   if (use_rl_policy_) {
     AINFO << "Using RL Policy for trajectory planning";
     try {
-      // 从车位多边形获取目标位置
-      auto target_position = swift::common::math::Vec2d(
-          slot_polygon.GetCenter().x(), slot_polygon.GetCenter().y());
+      // 从车位多边形获取目标位置（计算所有顶点的平均值）
+      swift::common::math::Vec2d target_position(0.0, 0.0);
+      if (slot_polygon.num_points() > 0) {
+        for (int i = 0; i < slot_polygon.num_points(); ++i) {
+          target_position += slot_polygon.points()[i];
+        }
+        target_position /= slot_polygon.num_points();
+      }
 
       // 计算车位中心的角度（使用车位多边形的前两个点计算方向）
       double target_yaw = 0.0;
@@ -1388,14 +1393,24 @@ Status OpenSpaceTrajectoryProvider::GenerateApaTrajectory(
         parking_slot.p2 = slot_polygon.points().at(2);
         parking_slot.p3 = slot_polygon.points().at(3);
         parking_slot.angle = target_yaw;
-        parking_slot.width = slot_polygon.GetWidth();
+        // 计算车位宽度（使用前两个点的距离作为宽度估计）
+        parking_slot.width =
+            slot_polygon.points().at(0).DistanceTo(slot_polygon.points().at(1));
         parking_slot.type =
             swift::planning::open_space::rl_policy::ParkingType::VERTICAL;
       }
 
+      // 将指针向量转换为对象向量
+      std::vector<swift::planning::Obstacle> obstacle_objects;
+      for (const auto *obstacle_ptr : frame_->obstacles()) {
+        if (obstacle_ptr) {
+          obstacle_objects.push_back(*obstacle_ptr);
+        }
+      }
+
       // 构建观察数据
       auto observation = observation_builder_->BuildObservationFromParkingSlot(
-          empty_point_cloud, frame_->vehicle_state(), frame_->obstacles(),
+          empty_point_cloud, frame_->vehicle_state(), obstacle_objects,
           parking_slot,
           nullptr, // reference_line
           10.0,    // lidar_max_range

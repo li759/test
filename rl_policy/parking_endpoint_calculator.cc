@@ -76,6 +76,86 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
   return endpoint;
 }
 
+ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
+    const swift::common::VehicleState &vehicle_state, const ParkingSlot &slot,
+    const std::vector<ObstacleInfo> &obstacles, bool is_wheel_stop_valid) {
+
+  // Build transform from vehicle state (world <-> ego)
+  double tx, ty, tyaw;
+  BuildTransformFromState(vehicle_state, tx, ty, tyaw);
+
+  // Transform inputs to ego frame to align numerics with APA
+  ParkingSlot slot_ego = TransformSlot(slot, tx, ty, tyaw, /*world_to_ego=*/true);
+  auto obs_ego = TransformObstacles(obstacles, tx, ty, tyaw, /*world_to_ego=*/true);
+
+  // Compute endpoint in ego frame using existing logic
+  ParkingEndpoint endpoint_ego = CalculateParkingEndpoint(slot_ego, obs_ego, is_wheel_stop_valid);
+
+  // Transform endpoint back to world
+  swift::common::math::Vec2d pos_w = TransformPoint(endpoint_ego.position, tx, ty, tyaw, /*world_to_ego=*/false);
+  double yaw_w = TransformYaw(endpoint_ego.yaw, tyaw, /*world_to_ego=*/false);
+
+  return ParkingEndpoint(pos_w, yaw_w, endpoint_ego.confidence, endpoint_ego.is_valid);
+}
+
+void ParkingEndpointCalculator::BuildTransformFromState(
+    const swift::common::VehicleState &state, double &tx, double &ty,
+    double &tyaw) {
+  tx = state.x();
+  ty = state.y();
+  tyaw = state.heading();
+}
+
+swift::common::math::Vec2d ParkingEndpointCalculator::TransformPoint(
+    const swift::common::math::Vec2d &p, double tx, double ty, double tyaw,
+    bool world_to_ego) {
+  double c = std::cos(tyaw), s = std::sin(tyaw);
+  if (world_to_ego) {
+    double dx = p.x() - tx;
+    double dy = p.y() - ty;
+    return {dx * c + dy * s, -dx * s + dy * c};
+  } else {
+    double x = p.x() * c - p.y() * s + tx;
+    double y = p.x() * s + p.y() * c + ty;
+    return {x, y};
+  }
+}
+
+double ParkingEndpointCalculator::TransformYaw(double yaw, double tyaw,
+                                               bool world_to_ego) {
+  if (world_to_ego) {
+    return yaw - tyaw;
+  } else {
+    return yaw + tyaw;
+  }
+}
+
+ParkingSlot ParkingEndpointCalculator::TransformSlot(
+    const ParkingSlot &slot, double tx, double ty, double tyaw,
+    bool world_to_ego) {
+  ParkingSlot out = slot;
+  out.p0 = TransformPoint(slot.p0, tx, ty, tyaw, world_to_ego);
+  out.p1 = TransformPoint(slot.p1, tx, ty, tyaw, world_to_ego);
+  out.p2 = TransformPoint(slot.p2, tx, ty, tyaw, world_to_ego);
+  out.p3 = TransformPoint(slot.p3, tx, ty, tyaw, world_to_ego);
+  out.angle = TransformYaw(slot.angle, tyaw, world_to_ego);
+  return out;
+}
+
+std::vector<ObstacleInfo> ParkingEndpointCalculator::TransformObstacles(
+    const std::vector<ObstacleInfo> &obs, double tx, double ty, double tyaw,
+    bool world_to_ego) {
+  std::vector<ObstacleInfo> out;
+  out.reserve(obs.size());
+  for (const auto &o : obs) {
+    ObstacleInfo t = o;
+    t.position = TransformPoint(o.position, tx, ty, tyaw, world_to_ego);
+    t.yaw = TransformYaw(o.yaw, tyaw, world_to_ego);
+    out.push_back(t);
+  }
+  return out;
+}
+
 ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
     const ParkingSlot &slot, const std::vector<ObstacleInfo> &obstacles,
     bool is_wheel_stop_valid) {
