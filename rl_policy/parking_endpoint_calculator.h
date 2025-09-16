@@ -27,6 +27,7 @@
 #include "modules/common/math/vec2d.h"
 #include "modules/planning/open_space/rl_policy/vehicle_config_manager.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
+#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 
 namespace swift {
 namespace planning {
@@ -146,7 +147,7 @@ public:
 
   // Overload with vehicle state to align with APA planner's coordinate handling
   ParkingEndpoint
-  CalculateParkingEndpoint(const swift::common::VehicleState &vehicle_state,
+  CalculateParkingEndpoint(const swift::common::VehicleStateProvider &vehicle_state,
                            const ParkingSlot &slot,
                            const std::vector<ObstacleInfo> &obstacles = {},
                            bool is_wheel_stop_valid = false);
@@ -214,7 +215,7 @@ private:
                            const swift::common::math::Vec2d &p2);
 
   // === Coordinate transform helpers (APA-aligned) ===
-  static void BuildTransformFromState(const swift::common::VehicleState &state,
+  static void BuildTransformFromState(const swift::common::VehicleStateProvider &state,
                                       double &tx, double &ty, double &tyaw);
   static swift::common::math::Vec2d TransformPoint(const swift::common::math::Vec2d &p,
                                                    double tx, double ty, double tyaw,

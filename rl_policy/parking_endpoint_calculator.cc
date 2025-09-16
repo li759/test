@@ -77,7 +77,7 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
 }
 
 ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
-    const swift::common::VehicleState &vehicle_state, const ParkingSlot &slot,
+    const swift::common::VehicleStateProvider &vehicle_state, const ParkingSlot &slot,
     const std::vector<ObstacleInfo> &obstacles, bool is_wheel_stop_valid) {
 
   // Build transform from vehicle state (world <-> ego)
@@ -101,7 +101,7 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
 }
 
 void ParkingEndpointCalculator::BuildTransformFromState(
-    const swift::common::VehicleState &state, double &tx, double &ty,
+    const swift::common::VehicleStateProvider &state, double &tx, double &ty,
     double &tyaw) {
   tx = state.x();
   ty = state.y();

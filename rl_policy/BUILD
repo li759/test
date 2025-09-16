@@ -25,6 +25,7 @@ cc_library(
         "//core/common:log",
         "//modules/common/math",
         ":vehicle_config_manager",
+        "//modules/common/vehicle_state:vehicle_state_provider",
     ],
 )
 
