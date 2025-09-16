@@ -88,14 +88,11 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
   ParkingSlot slot_ego = TransformSlot(slot, tx, ty, tyaw, /*world_to_ego=*/true);
   auto obs_ego = TransformObstacles(obstacles, tx, ty, tyaw, /*world_to_ego=*/true);
 
-  // Compute endpoint in ego frame using existing logic
+  // Compute endpoint in ego frame using existing logic (origin at start)
   ParkingEndpoint endpoint_ego = CalculateParkingEndpoint(slot_ego, obs_ego, is_wheel_stop_valid);
 
-  // Transform endpoint back to world
-  swift::common::math::Vec2d pos_w = TransformPoint(endpoint_ego.position, tx, ty, tyaw, /*world_to_ego=*/false);
-  double yaw_w = TransformYaw(endpoint_ego.yaw, tyaw, /*world_to_ego=*/false);
-
-  return ParkingEndpoint(pos_w, yaw_w, endpoint_ego.confidence, endpoint_ego.is_valid);
+  // Return endpoint in ego coordinates to align with APA (origin at start)
+  return endpoint_ego;
 }
 
 void ParkingEndpointCalculator::BuildTransformFromState(
