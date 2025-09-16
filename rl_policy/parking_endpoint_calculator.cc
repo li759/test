@@ -19,7 +19,7 @@
 
 #include <algorithm>
 #include <cmath>
-
+#include <iostream>
 #include "core/common/log.h"
 
 namespace swift {
@@ -87,6 +87,11 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
   // Transform inputs to ego frame to align numerics with APA
   ParkingSlot slot_ego = TransformSlot(slot, tx, ty, tyaw, /*world_to_ego=*/true);
   auto obs_ego = TransformObstacles(obstacles, tx, ty, tyaw, /*world_to_ego=*/true);
+  std::cout << "[RL] P0_x: " << slot_ego.p0.x() << ",y:" << slot_ego.p0.y() << std::endl
+  std::cout << "[RL] P1_x: " << slot_ego.p1.x() << ",y:" << slot_ego.p1.y() << std::endl
+  std::cout << "[RL] P2_x: " << slot_ego.p2.x() << ",y:" << slot_ego.p2.y() << std::endl
+  std::cout << "[RL] P3_x: " << slot_ego.p3.x() << ",y:" << slot_ego.p3.y() << std::endl;
+
 
   // Compute endpoint in ego frame using existing logic (origin at start)
   ParkingEndpoint endpoint_ego = CalculateParkingEndpoint(slot_ego, obs_ego, is_wheel_stop_valid);
@@ -211,7 +216,7 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
   endpoint.yaw = slot_heading;
   endpoint.confidence = 1.0;
   endpoint.is_valid = true;
-
+  std::cout << "[RL]ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" << endpoint.yaw << std::endl;
   return endpoint;
 }
 
@@ -223,9 +228,11 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
 
   switch (type) {
   case ParkingType::VERTICAL:
+    std::cout << "[RL] VERTICAL" << std::endl;
     return CalculateVerticalParkingEndpoint(slot, obstacles,
                                             is_wheel_stop_valid);
   case ParkingType::PARALLEL:
+    std::cout << "[RL] PARALLEL" << std::endl;
     return CalculateParallelParkingEndpoint(slot, obstacles,
                                             is_wheel_stop_valid);
   default:
