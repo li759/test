@@ -123,7 +123,7 @@ TargetInfo TargetExtractor::ExtractTargetInfoFromParkingSlot(
 
   // Calculate parking endpoint using APA planner logic
   ParkingEndpoint endpoint = parking_calculator_.CalculateParkingEndpoint(
-      parking_slot, obstacles, is_wheel_stop_valid);
+    vehicle_state, parking_slot, obstacles, is_wheel_stop_valid);
 
   if (!endpoint.is_valid) {
     AERROR << "Failed to calculate parking endpoint";

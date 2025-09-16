@@ -152,6 +152,13 @@ public:
                            const std::vector<ObstacleInfo> &obstacles = {},
                            bool is_wheel_stop_valid = false);
 
+  // Overload to support existing call sites using swift::common::VehicleState
+  ParkingEndpoint
+  CalculateParkingEndpoint(const swift::common::VehicleState &vehicle_state,
+                           const ParkingSlot &slot,
+                           const std::vector<ObstacleInfo> &obstacles = {},
+                           bool is_wheel_stop_valid = false);
+
   /**
    * @brief Optimize endpoint with obstacle constraints
    * @param initial_endpoint Initial endpoint
@@ -216,6 +223,8 @@ private:
 
   // === Coordinate transform helpers (APA-aligned) ===
   static void BuildTransformFromState(const swift::common::VehicleStateProvider &state,
+                                      double &tx, double &ty, double &tyaw);
+  static void BuildTransformFromState(const swift::common::VehicleState &state,
                                       double &tx, double &ty, double &tyaw);
   static swift::common::math::Vec2d TransformPoint(const swift::common::math::Vec2d &p,
                                                    double tx, double ty, double tyaw,

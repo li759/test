@@ -21,6 +21,18 @@
 #include <cmath>
 #include <iostream>
 #include "core/common/log.h"
+ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
+    const swift::common::VehicleState &vehicle_state, const ParkingSlot &slot,
+    const std::vector<ObstacleInfo> &obstacles, bool is_wheel_stop_valid) {
+
+  double tx, ty, tyaw;
+  BuildTransformFromState(vehicle_state, tx, ty, tyaw);
+  ParkingSlot slot_ego = TransformSlot(slot, tx, ty, tyaw, /*world_to_ego=*/true);
+  auto obs_ego = TransformObstacles(obstacles, tx, ty, tyaw, /*world_to_ego=*/true);
+  ParkingEndpoint endpoint_ego = CalculateParkingEndpoint(slot_ego, obs_ego, is_wheel_stop_valid);
+  return endpoint_ego;
+}
+
 
 namespace swift {
 namespace planning {
@@ -102,6 +114,14 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
 
 void ParkingEndpointCalculator::BuildTransformFromState(
     const swift::common::VehicleStateProvider &state, double &tx, double &ty,
+    double &tyaw) {
+  tx = state.x();
+  ty = state.y();
+  tyaw = state.heading();
+}
+
+void ParkingEndpointCalculator::BuildTransformFromState(
+    const swift::common::VehicleState &state, double &tx, double &ty,
     double &tyaw) {
   tx = state.x();
   ty = state.y();
