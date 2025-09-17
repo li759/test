@@ -38,20 +38,16 @@ namespace rl_policy {
  * @brief Target information for RL observation (5-dimensional)
  */
 struct TargetInfo {
-  float dx;            // Target relative position x (m)
-  float dy;            // Target relative position y (m)
-  float heading_error; // Heading error (rad)
-  float current_speed; // Current vehicle speed (m/s)
-  float curvature;     // Path curvature (1/m)
+  float dx;             // Target relative position x (m)
+  float dy;             // Target relative position y (m)
+  float heading_error;  // Heading error (rad)
+  float current_speed;  // Current vehicle speed (m/s)
+  float curvature;      // Path curvature (1/m)
 
-  TargetInfo()
-      : dx(0.0f), dy(0.0f), heading_error(0.0f), current_speed(0.0f),
-        curvature(0.0f) {}
+  TargetInfo() : dx(0.0f), dy(0.0f), heading_error(0.0f), current_speed(0.0f), curvature(0.0f) {}
 
-  TargetInfo(float dx, float dy, float heading_error, float current_speed,
-             float curvature)
-      : dx(dx), dy(dy), heading_error(heading_error),
-        current_speed(current_speed), curvature(curvature) {}
+  TargetInfo(float dx, float dy, float heading_error, float current_speed, float curvature)
+      : dx(dx), dy(dy), heading_error(heading_error), current_speed(current_speed), curvature(curvature) {}
 };
 
 /**
@@ -59,7 +55,7 @@ struct TargetInfo {
  * @brief Extract 5-dimensional target information from Swift vehicle state
  */
 class TargetExtractor {
-public:
+ public:
   TargetExtractor() = default;
   ~TargetExtractor() = default;
 
@@ -70,10 +66,10 @@ public:
    * @param target_yaw Target yaw angle (rad)
    * @return TargetInfo structure with 5-dimensional target data
    */
-  TargetInfo
-  ExtractTargetInfo(const swift::common::VehicleState &vehicle_state,
-                    const swift::common::math::Vec2d &target_position,
-                    double target_yaw);
+  TargetInfo ExtractTargetInfo(
+      const swift::common::VehicleState& vehicle_state,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw);
 
   /**
    * @brief Extract target information with reference line curvature
@@ -84,8 +80,9 @@ public:
    * @return TargetInfo structure with 5-dimensional target data
    */
   TargetInfo ExtractTargetInfoWithCurvature(
-      const swift::common::VehicleState &vehicle_state,
-      const swift::common::math::Vec2d &target_position, double target_yaw,
+      const swift::common::VehicleState& vehicle_state,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw,
       double reference_curvature = 0.0);
 
   /**
@@ -97,16 +94,9 @@ public:
    * @return TargetInfo structure with 5-dimensional target data
    */
   TargetInfo ExtractTargetInfoFromParkingSlot(
-      const swift::common::VehicleStateProvider &vehicle_state,
-      const ParkingSlot &parking_slot,
-      const std::vector<ObstacleInfo> &obstacles = {},
-      bool is_wheel_stop_valid = false);
-
-  // Overload: keep compatibility with call sites passing VehicleState
-  TargetInfo ExtractTargetInfoFromParkingSlot(
-      const swift::common::VehicleState &vehicle_state,
-      const ParkingSlot &parking_slot,
-      const std::vector<ObstacleInfo> &obstacles = {},
+      const swift::common::VehicleState& vehicle_state,
+      const ParkingSlot& parking_slot,
+      const std::vector<ObstacleInfo>& obstacles = {},
       bool is_wheel_stop_valid = false);
 
   /**
@@ -114,7 +104,7 @@ public:
    * @param target_info Target information structure
    * @return Vector of 5 float values [dx, dy, heading_error, speed, curvature]
    */
-  std::vector<float> ToVector(const TargetInfo &target_info);
+  std::vector<float> ToVector(const TargetInfo& target_info);
 
   /**
    * @brief Calculate heading error between current and target yaw
@@ -130,11 +120,10 @@ public:
    * @param target_position Target position in global coordinates
    * @return Relative position [dx, dy] in vehicle frame
    */
-  static std::pair<double, double>
-  CalculateRelativePosition(const swift::common::VehicleState &vehicle_state,
-                            const swift::common::math::Vec2d &target_position);
+  static std::pair<double, double> CalculateRelativePosition(
+      const swift::common::VehicleState& vehicle_state, const swift::common::math::Vec2d& target_position);
 
-private:
+ private:
   /**
    * @brief Normalize angle to [-PI, PI] range
    * @param angle Input angle (rad)
@@ -146,7 +135,7 @@ private:
   ParkingEndpointCalculator parking_calculator_;
 };
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift

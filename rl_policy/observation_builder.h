@@ -47,11 +47,11 @@ namespace rl_policy {
  * @brief Complete RL observation structure (12455 dimensions)
  */
 struct SwiftObservation {
-  std::vector<float> lidar;       // 120 dimensions - lidar beams
-  std::vector<float> target;      // 5 dimensions - target information
-  std::vector<float> img;         // 12288 dimensions - occupancy grid (3x64x64)
-  std::vector<float> action_mask; // 42 dimensions - action mask
-  std::vector<float> flattened;   // 12455 dimensions - concatenated observation
+  std::vector<float> lidar;        // 120 dimensions - lidar beams
+  std::vector<float> target;       // 5 dimensions - target information
+  std::vector<float> img;          // 12288 dimensions - occupancy grid (3x64x64)
+  std::vector<float> action_mask;  // 42 dimensions - action mask
+  std::vector<float> flattened;    // 12455 dimensions - concatenated observation
 
   SwiftObservation() {
     lidar.resize(120, 0.0f);
@@ -94,7 +94,7 @@ struct SwiftObservation {
  * @brief Build complete RL observation from Swift data sources
  */
 class ObservationBuilder {
-public:
+ public:
   ObservationBuilder() = default;
   ~ObservationBuilder() = default;
 
@@ -109,12 +109,12 @@ public:
    * @return Complete SwiftObservation structure
    */
   SwiftObservation BuildObservation(
-      const swift::perception::base::PointDCloud &point_cloud,
-      const swift::common::VehicleState &vehicle_state,
-      const std::vector<swift::planning::Obstacle> &obstacles,
-      const swift::common::math::Vec2d &target_position, double target_yaw,
-      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
-          nullptr);
+      const swift::perception::base::PointDCloud& point_cloud,
+      const swift::common::VehicleState& vehicle_state,
+      const std::vector<swift::planning::Obstacle>& obstacles,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw,
+      const std::shared_ptr<swift::planning::ReferenceLine>& reference_line = nullptr);
 
   /**
    * @brief Build observation without point cloud (obstacle-based only)
@@ -126,11 +126,11 @@ public:
    * @return Complete SwiftObservation structure
    */
   SwiftObservation BuildObservationFromObstacles(
-      const swift::common::VehicleState &vehicle_state,
-      const std::vector<swift::planning::Obstacle> &obstacles,
-      const swift::common::math::Vec2d &target_position, double target_yaw,
-      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
-          nullptr);
+      const swift::common::VehicleState& vehicle_state,
+      const std::vector<swift::planning::Obstacle>& obstacles,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw,
+      const std::shared_ptr<swift::planning::ReferenceLine>& reference_line = nullptr);
 
   /**
    * @brief Build observation with custom parameters
@@ -145,34 +145,24 @@ public:
    * @return Complete SwiftObservation structure
    */
   SwiftObservation BuildObservationWithParams(
-      const swift::perception::base::PointDCloud &point_cloud,
-      const swift::common::VehicleState &vehicle_state,
-      const std::vector<swift::planning::Obstacle> &obstacles,
-      const swift::common::math::Vec2d &target_position, double target_yaw,
-      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
-          nullptr,
-      double lidar_max_range = 10.0, double img_view_range = 20.0);
+      const swift::perception::base::PointDCloud& point_cloud,
+      const swift::common::VehicleState& vehicle_state,
+      const std::vector<swift::planning::Obstacle>& obstacles,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw,
+      const std::shared_ptr<swift::planning::ReferenceLine>& reference_line = nullptr,
+      double lidar_max_range = 10.0,
+      double img_view_range = 20.0);
 
-  /**
-   * @brief Build observation from parking slot information
-   * @param point_cloud Swift point cloud data (optional)
-   * @param vehicle_state Current vehicle state
-   * @param obstacles List of obstacles
-   * @param parking_slot Parking slot information
-   * @param reference_line Reference line (optional)
-   * @param lidar_max_range Maximum lidar range (default: 10.0m)
-   * @param img_view_range Image view range (default: 20.0m)
-   * @param is_wheel_stop_valid Whether wheel stop is valid
-   * @return Complete SwiftObservation structure
-   */
+
   SwiftObservation BuildObservationFromParkingSlot(
-      const swift::perception::base::PointDCloud &point_cloud,
-      const swift::common::VehicleState &vehicle_state,
-      const std::vector<swift::planning::Obstacle> &obstacles,
-      const ParkingSlot &parking_slot,
-      const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
-          nullptr,
-      double lidar_max_range = 10.0, double img_view_range = 20.0,
+      const swift::perception::base::PointDCloud& point_cloud,
+      const swift::common::VehicleState& vehicle_state,
+      const std::vector<swift::planning::Obstacle>& obstacles,
+      const ParkingSlot& parking_slot,
+      const std::shared_ptr<swift::planning::ReferenceLine>& reference_line = nullptr,
+      double lidar_max_range = 10.0,
+      double img_view_range = 20.0,
       bool is_wheel_stop_valid = false);
 
   /**
@@ -180,16 +170,16 @@ public:
    * @param observation Observation to validate
    * @return True if dimensions are correct
    */
-  bool ValidateObservation(const SwiftObservation &observation);
+  bool ValidateObservation(const SwiftObservation& observation);
 
   /**
    * @brief Get observation statistics for debugging
    * @param observation Observation to analyze
    * @return String with statistics
    */
-  std::string GetObservationStats(const SwiftObservation &observation);
+  std::string GetObservationStats(const SwiftObservation& observation);
 
-private:
+ private:
   // Component extractors
   LidarExtractor lidar_extractor_;
   TargetExtractor target_extractor_;
@@ -205,7 +195,7 @@ private:
   static constexpr int kDefaultImgChannels = 3;
 };
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift

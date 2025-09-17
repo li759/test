@@ -27,35 +27,38 @@ namespace planning {
 namespace open_space {
 namespace rl_policy {
 
-std::vector<float>
-ToHopeAdapter::ConvertToHopeObservation(const SwiftObservation &swift_obs) {
+std::vector<float> ToHopeAdapter::ConvertToHopeObservation(const SwiftObservation& swift_obs) {
   // Swift observation is already in the correct format (12455 dimensions)
   // Just return the flattened vector
   return swift_obs.flattened;
 }
 
-HopeVehicleState ToHopeAdapter::ConvertToHopeVehicleState(
-    const swift::common::VehicleState &swift_state) {
-
-  return HopeVehicleState(swift_state.x(), swift_state.y(),
-                          swift_state.heading(), swift_state.linear_velocity(),
-                          0.0 // Steering angle not available in VehicleState
+HopeVehicleState ToHopeAdapter::ConvertToHopeVehicleState(const swift::common::VehicleState& swift_state) {
+  return HopeVehicleState(
+      swift_state.x(),
+      swift_state.y(),
+      swift_state.heading(),
+      swift_state.linear_velocity(),
+      0.0  // Steering angle not available in VehicleState
   );
 }
 
 std::vector<HopeObstacle> ToHopeAdapter::ConvertToHopeObstacles(
-    const std::vector<swift::planning::Obstacle> &swift_obstacles) {
-
+    const std::vector<swift::planning::Obstacle>& swift_obstacles) {
   std::vector<HopeObstacle> hope_obstacles;
   hope_obstacles.reserve(swift_obstacles.size());
 
-  for (const auto &swift_obs : swift_obstacles) {
-    const auto &bounding_box = swift_obs.PerceptionBoundingBox();
-    const auto &center = bounding_box.center();
+  for (const auto& swift_obs : swift_obstacles) {
+    const auto& bounding_box = swift_obs.PerceptionBoundingBox();
+    const auto& center = bounding_box.center();
 
-    HopeObstacle hope_obs(center.x(), center.y(), bounding_box.length(),
-                          bounding_box.width(), bounding_box.heading(),
-                          swift_obs.IsStatic());
+    HopeObstacle hope_obs(
+        center.x(),
+        center.y(),
+        bounding_box.length(),
+        bounding_box.width(),
+        bounding_box.heading(),
+        swift_obs.IsStatic());
 
     hope_obstacles.push_back(hope_obs);
   }
@@ -63,9 +66,7 @@ std::vector<HopeObstacle> ToHopeAdapter::ConvertToHopeObstacles(
   return hope_obstacles;
 }
 
-ToHopeAdapter::SwiftAction
-ToHopeAdapter::ConvertToSwiftAction(const std::vector<float> &hope_action) {
-
+ToHopeAdapter::SwiftAction ToHopeAdapter::ConvertToSwiftAction(const std::vector<float>& hope_action) {
   if (hope_action.size() < 2) {
     return SwiftAction(0.0, 0.0);
   }
@@ -83,18 +84,15 @@ ToHopeAdapter::ConvertToSwiftAction(const std::vector<float> &hope_action) {
   return SwiftAction(steering_angle, step_length);
 }
 
-bool ToHopeAdapter::ValidateHopeObservation(
-    const std::vector<float> &hope_obs) {
+bool ToHopeAdapter::ValidateHopeObservation(const std::vector<float>& hope_obs) {
   // Check dimension
   if (hope_obs.size() != kHopeObservationDim) {
     return false;
   }
 
   // Check for NaN or infinite values
-  auto has_invalid_value = [](const std::vector<float> &vec) {
-    return std::any_of(vec.begin(), vec.end(), [](float val) {
-      return std::isnan(val) || std::isinf(val);
-    });
+  auto has_invalid_value = [](const std::vector<float>& vec) {
+    return std::any_of(vec.begin(), vec.end(), [](float val) { return std::isnan(val) || std::isinf(val); });
   };
 
   if (has_invalid_value(hope_obs)) {
@@ -104,13 +102,11 @@ bool ToHopeAdapter::ValidateHopeObservation(
   return true;
 }
 
-std::string
-ToHopeAdapter::GetHopeObservationStats(const std::vector<float> &hope_obs) {
+std::string ToHopeAdapter::GetHopeObservationStats(const std::vector<float>& hope_obs) {
   std::stringstream ss;
 
   if (hope_obs.size() != kHopeObservationDim) {
-    ss << "Invalid HOPE observation dimension: " << hope_obs.size()
-       << " (expected " << kHopeObservationDim << ")";
+    ss << "Invalid HOPE observation dimension: " << hope_obs.size() << " (expected " << kHopeObservationDim << ")";
     return ss.str();
   }
 
@@ -135,26 +131,20 @@ ToHopeAdapter::GetHopeObservationStats(const std::vector<float> &hope_obs) {
   auto img_begin = hope_obs.begin() + offset;
   auto img_end = img_begin + kHopeImgDim;
   auto img_sum = std::accumulate(img_begin, img_end, 0.0f);
-  auto img_nonzero =
-      std::count_if(img_begin, img_end, [](float val) { return val > 0.0f; });
+  auto img_nonzero = std::count_if(img_begin, img_end, [](float val) { return val > 0.0f; });
   offset += kHopeImgDim;
 
   // Action mask statistics (42 dimensions)
   auto action_mask_begin = hope_obs.begin() + offset;
   auto action_mask_end = action_mask_begin + kHopeActionMaskDim;
-  auto action_mask_sum =
-      std::accumulate(action_mask_begin, action_mask_end, 0.0f);
-  auto action_mask_available = std::count_if(
-      action_mask_begin, action_mask_end, [](float val) { return val > 0.5f; });
+  auto action_mask_sum = std::accumulate(action_mask_begin, action_mask_end, 0.0f);
+  auto action_mask_available = std::count_if(action_mask_begin, action_mask_end, [](float val) { return val > 0.5f; });
 
   ss << "HOPE Observation Stats:\n";
-  ss << "  Lidar: sum=" << lidar_sum << ", min=" << lidar_min
-     << ", max=" << lidar_max << "\n";
+  ss << "  Lidar: sum=" << lidar_sum << ", min=" << lidar_min << ", max=" << lidar_max << "\n";
   ss << "  Target: sum=" << target_sum << "\n";
-  ss << "  Image: sum=" << img_sum << ", nonzero_pixels=" << img_nonzero
-     << "\n";
-  ss << "  ActionMask: sum=" << action_mask_sum
-     << ", available_actions=" << action_mask_available << "\n";
+  ss << "  Image: sum=" << img_sum << ", nonzero_pixels=" << img_nonzero << "\n";
+  ss << "  ActionMask: sum=" << action_mask_sum << ", available_actions=" << action_mask_available << "\n";
   ss << "  Total dim: " << hope_obs.size() << "\n";
 
   return ss.str();
@@ -174,7 +164,7 @@ double ToHopeAdapter::NormalizeAngle(double angle) {
   return angle;
 }
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift

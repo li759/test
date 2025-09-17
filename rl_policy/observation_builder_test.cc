@@ -31,7 +31,7 @@ namespace open_space {
 namespace rl_policy {
 
 class ObservationBuilderTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override {
     // Create test vehicle state
     vehicle_state_ = std::make_unique<swift::common::VehicleState>();
@@ -66,8 +66,7 @@ protected:
     perception_obs.mutable_velocity()->set_z(0.0);
 
     auto obstacle = std::make_unique<swift::planning::Obstacle>(
-        "test_obstacle", perception_obs,
-        swift::prediction::ObstaclePriority::NORMAL, true);
+        "test_obstacle", perception_obs, swift::prediction::ObstaclePriority::NORMAL, true);
 
     obstacles_.push_back(std::move(obstacle));
   }
@@ -102,12 +101,12 @@ TEST_F(ObservationBuilderTest, BuildObservationFromObstacles) {
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
-  for (const auto &obs : obstacles_) {
+  for (const auto& obs : obstacles_) {
     const_obstacles.push_back(*obs);
   }
 
-  SwiftObservation observation = builder.BuildObservationFromObstacles(
-      *vehicle_state_, const_obstacles, target_position_, target_yaw_);
+  SwiftObservation observation =
+      builder.BuildObservationFromObstacles(*vehicle_state_, const_obstacles, target_position_, target_yaw_);
 
   // Validate observation
   EXPECT_TRUE(builder.ValidateObservation(observation));
@@ -116,15 +115,12 @@ TEST_F(ObservationBuilderTest, BuildObservationFromObstacles) {
   EXPECT_EQ(observation.lidar.size(), SwiftObservation::GetLidarDim());
   EXPECT_EQ(observation.target.size(), SwiftObservation::GetTargetDim());
   EXPECT_EQ(observation.img.size(), SwiftObservation::GetImgDim());
-  EXPECT_EQ(observation.action_mask.size(),
-            SwiftObservation::GetActionMaskDim());
-  EXPECT_EQ(observation.flattened.size(),
-            SwiftObservation::GetObservationDim());
+  EXPECT_EQ(observation.action_mask.size(), SwiftObservation::GetActionMaskDim());
+  EXPECT_EQ(observation.flattened.size(), SwiftObservation::GetObservationDim());
 
   // Check that flattened observation is correct
   observation.Flatten();
-  EXPECT_EQ(observation.flattened.size(),
-            SwiftObservation::GetObservationDim());
+  EXPECT_EQ(observation.flattened.size(), SwiftObservation::GetObservationDim());
 }
 
 TEST_F(ObservationBuilderTest, BuildObservationWithPointCloud) {
@@ -132,13 +128,12 @@ TEST_F(ObservationBuilderTest, BuildObservationWithPointCloud) {
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
-  for (const auto &obs : obstacles_) {
+  for (const auto& obs : obstacles_) {
     const_obstacles.push_back(*obs);
   }
 
   SwiftObservation observation =
-      builder.BuildObservation(*point_cloud_, *vehicle_state_, const_obstacles,
-                               target_position_, target_yaw_);
+      builder.BuildObservation(*point_cloud_, *vehicle_state_, const_obstacles, target_position_, target_yaw_);
 
   // Validate observation
   EXPECT_TRUE(builder.ValidateObservation(observation));
@@ -147,10 +142,8 @@ TEST_F(ObservationBuilderTest, BuildObservationWithPointCloud) {
   EXPECT_EQ(observation.lidar.size(), SwiftObservation::GetLidarDim());
   EXPECT_EQ(observation.target.size(), SwiftObservation::GetTargetDim());
   EXPECT_EQ(observation.img.size(), SwiftObservation::GetImgDim());
-  EXPECT_EQ(observation.action_mask.size(),
-            SwiftObservation::GetActionMaskDim());
-  EXPECT_EQ(observation.flattened.size(),
-            SwiftObservation::GetObservationDim());
+  EXPECT_EQ(observation.action_mask.size(), SwiftObservation::GetActionMaskDim());
+  EXPECT_EQ(observation.flattened.size(), SwiftObservation::GetObservationDim());
 }
 
 TEST_F(ObservationBuilderTest, BuildObservationWithParams) {
@@ -158,14 +151,19 @@ TEST_F(ObservationBuilderTest, BuildObservationWithParams) {
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
-  for (const auto &obs : obstacles_) {
+  for (const auto& obs : obstacles_) {
     const_obstacles.push_back(*obs);
   }
 
   SwiftObservation observation = builder.BuildObservationWithParams(
-      *point_cloud_, *vehicle_state_, const_obstacles, target_position_,
-      target_yaw_, nullptr, 15.0,
-      25.0); // Custom lidar range and image view range
+      *point_cloud_,
+      *vehicle_state_,
+      const_obstacles,
+      target_position_,
+      target_yaw_,
+      nullptr,
+      15.0,
+      25.0);  // Custom lidar range and image view range
 
   // Validate observation
   EXPECT_TRUE(builder.ValidateObservation(observation));
@@ -174,10 +172,8 @@ TEST_F(ObservationBuilderTest, BuildObservationWithParams) {
   EXPECT_EQ(observation.lidar.size(), SwiftObservation::GetLidarDim());
   EXPECT_EQ(observation.target.size(), SwiftObservation::GetTargetDim());
   EXPECT_EQ(observation.img.size(), SwiftObservation::GetImgDim());
-  EXPECT_EQ(observation.action_mask.size(),
-            SwiftObservation::GetActionMaskDim());
-  EXPECT_EQ(observation.flattened.size(),
-            SwiftObservation::GetObservationDim());
+  EXPECT_EQ(observation.action_mask.size(), SwiftObservation::GetActionMaskDim());
+  EXPECT_EQ(observation.flattened.size(), SwiftObservation::GetObservationDim());
 }
 
 TEST_F(ObservationBuilderTest, GetObservationStats) {
@@ -185,12 +181,12 @@ TEST_F(ObservationBuilderTest, GetObservationStats) {
 
   // Convert obstacles to const references
   std::vector<swift::planning::Obstacle> const_obstacles;
-  for (const auto &obs : obstacles_) {
+  for (const auto& obs : obstacles_) {
     const_obstacles.push_back(*obs);
   }
 
-  SwiftObservation observation = builder.BuildObservationFromObstacles(
-      *vehicle_state_, const_obstacles, target_position_, target_yaw_);
+  SwiftObservation observation =
+      builder.BuildObservationFromObstacles(*vehicle_state_, const_obstacles, target_position_, target_yaw_);
 
   std::string stats = builder.GetObservationStats(observation);
 
@@ -212,25 +208,23 @@ TEST_F(ObservationBuilderTest, ValidateObservation) {
   valid_observation.lidar.resize(SwiftObservation::GetLidarDim(), 1.0f);
   valid_observation.target.resize(SwiftObservation::GetTargetDim(), 0.5f);
   valid_observation.img.resize(SwiftObservation::GetImgDim(), 0.0f);
-  valid_observation.action_mask.resize(SwiftObservation::GetActionMaskDim(),
-                                       1.0f);
+  valid_observation.action_mask.resize(SwiftObservation::GetActionMaskDim(), 1.0f);
   valid_observation.Flatten();
 
   EXPECT_TRUE(builder.ValidateObservation(valid_observation));
 
   // Test with invalid dimensions
   SwiftObservation invalid_observation;
-  invalid_observation.lidar.resize(50, 1.0f); // Wrong size
+  invalid_observation.lidar.resize(50, 1.0f);  // Wrong size
   invalid_observation.target.resize(SwiftObservation::GetTargetDim(), 0.5f);
   invalid_observation.img.resize(SwiftObservation::GetImgDim(), 0.0f);
-  invalid_observation.action_mask.resize(SwiftObservation::GetActionMaskDim(),
-                                         1.0f);
+  invalid_observation.action_mask.resize(SwiftObservation::GetActionMaskDim(), 1.0f);
   invalid_observation.Flatten();
 
   EXPECT_FALSE(builder.ValidateObservation(invalid_observation));
 }
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift

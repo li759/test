@@ -23,15 +23,15 @@
 #pragma once
 
 #ifndef base_configure_h
-#define base_configure_h
+  #define base_configure_h
 
-#include <algorithm>
-#include <chrono>
-#include <eigen3/Eigen/Dense>
-#include <math.h>
-#include <memory>
-#include <thread>
-#include <vector>
+  #include <algorithm>
+  #include <chrono>
+  #include <eigen3/Eigen/Dense>
+  #include <math.h>
+  #include <memory>
+  #include <thread>
+  #include <vector>
 
 // RL Policy specific constants
 const double Rad2Ang = 57.29578f;
@@ -48,9 +48,9 @@ const double VEHICLE_MIN_RADIUS = 6.0;
 // RL Observation dimensions
 const int LIDAR_DIM = 120;
 const int TARGET_DIM = 5;
-const int IMG_DIM = 12288; // 3 * 64 * 64
+const int IMG_DIM = 12288;  // 3 * 64 * 64
 const int ACTION_MASK_DIM = 42;
-const int OBS_DIM = 12455; // LIDAR_DIM + TARGET_DIM + IMG_DIM + ACTION_MASK_DIM
+const int OBS_DIM = 12455;  // LIDAR_DIM + TARGET_DIM + IMG_DIM + ACTION_MASK_DIM
 
 // Lidar parameters
 const double LIDAR_MAX_RANGE = 10.0;
@@ -93,10 +93,8 @@ struct RLVehicleState {
   double speed;
   double steering_angle;
 
-  RLVehicleState()
-      : x(0.0), y(0.0), yaw(0.0), speed(0.0), steering_angle(0.0) {}
-  RLVehicleState(double x, double y, double yaw, double speed,
-                 double steering_angle)
+  RLVehicleState() : x(0.0), y(0.0), yaw(0.0), speed(0.0), steering_angle(0.0) {}
+  RLVehicleState(double x, double y, double yaw, double speed, double steering_angle)
       : x(x), y(y), yaw(yaw), speed(speed), steering_angle(steering_angle) {}
 };
 
@@ -105,8 +103,7 @@ struct RLAction {
   double step_length;
 
   RLAction() : steering_angle(0.0), step_length(0.0) {}
-  RLAction(double steering, double step)
-      : steering_angle(steering), step_length(step) {}
+  RLAction(double steering, double step) : steering_angle(steering), step_length(step) {}
 };
 
 struct RLObservation {
@@ -136,8 +133,8 @@ struct RLObservation {
 
 // Configuration manager for RL Policy
 class RLPolicyConfigManager {
-public:
-  static RLPolicyConfigManager &Get() {
+ public:
+  static RLPolicyConfigManager& Get() {
     static RLPolicyConfigManager instance;
     return instance;
   }
@@ -189,13 +186,13 @@ public:
   bool getSaveTrajectory() const { return SAVE_TRAJECTORY; }
   bool getPrintObservationStats() const { return PRINT_OBSERVATION_STATS; }
 
-private:
+ private:
   RLPolicyConfigManager() = default;
   ~RLPolicyConfigManager() = default;
 
   // Disable copy constructor and assignment operator
-  RLPolicyConfigManager(const RLPolicyConfigManager &) = delete;
-  RLPolicyConfigManager &operator=(const RLPolicyConfigManager &) = delete;
+  RLPolicyConfigManager(const RLPolicyConfigManager&) = delete;
+  RLPolicyConfigManager& operator=(const RLPolicyConfigManager&) = delete;
 };
 
 #endif

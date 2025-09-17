@@ -23,7 +23,6 @@
 #pragma once
 
 #include <memory>
-#include <array>
 #include <vector>
 
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
@@ -70,7 +69,7 @@ public:
       const swift::common::VehicleState &vehicle_state,
       const std::vector<swift::planning::Obstacle> &obstacles,
       const std::vector<double> &steering_actions,
-      const std::vector<double> &speeds,
+      const std::vector<double> &step_lengths,
       const std::shared_ptr<swift::planning::ReferenceLine> &reference_line =
           nullptr);
 
@@ -80,10 +79,6 @@ public:
    * @return Vector of ones (all actions allowed)
    */
   std::vector<float> CreateDefaultActionMask(int num_actions = 42);
-
-  // HOPE风格：直接由lidar生成42维连续mask
-  std::vector<float> ExtractActionMaskFromLidar(
-      const std::vector<float>& raw_lidar_obs);
 
   /**
    * @brief Check if specific action is valid
@@ -96,20 +91,9 @@ public:
    */
   bool IsActionValid(const swift::common::VehicleState &vehicle_state,
                      const std::vector<swift::planning::Obstacle> &obstacles,
-                     double steering_angle, double signed_speed,
+                     double steering_angle, double step_length,
                      const std::shared_ptr<swift::planning::ReferenceLine>
                          &reference_line = nullptr);
-
-  /**
-   * @brief Compute continuous action score in [0,1] (HOPE-style soft mask)
-   * @details 1.0 = safest, 0.0 = invalid/collision. Uses proximity to obstacles
-   *          and optional reference line constraints.
-   */
-  double ComputeActionScore(const swift::common::VehicleState &vehicle_state,
-                            const std::vector<swift::planning::Obstacle> &obstacles,
-                            double steering_angle, double signed_speed,
-                            const std::shared_ptr<swift::planning::ReferenceLine>
-                                &reference_line = nullptr);
 
 private:
   /**
@@ -122,7 +106,7 @@ private:
    */
   bool CheckCollision(const swift::common::VehicleState &vehicle_state,
                       const std::vector<swift::planning::Obstacle> &obstacles,
-                      double steering_angle, double signed_speed);
+                      double steering_angle, double step_length);
 
   /**
    * @brief Predict vehicle position after action
@@ -133,7 +117,7 @@ private:
    */
   swift::common::VehicleState
   PredictVehicleState(const swift::common::VehicleState &vehicle_state,
-                      double steering_angle, double signed_speed);
+                      double steering_angle, double step_length);
 
   /**
    * @brief Check if predicted state is within reference line bounds
@@ -151,55 +135,20 @@ private:
    * @param step_lengths Output vector for step lengths
    */
   void GetDefaultActionSpace(std::vector<double> &steering_actions,
-                             std::vector<double> &speeds);
+                             std::vector<double> &step_lengths);
 
   // Default action space configuration
-  // HOPE-aligned: 21 steering angles in [+0.75, -0.75] with step 0.75/10, and two speeds {+1.0, -1.0}
-  static constexpr int kHopePrecision = 10;            // -> 2*10+1 = 21
-  static constexpr double kHopeValidSteerMax = 0.75;   // radians (normalized)
-  static constexpr double kHopeValidSpeed = 1.0;       // normalized speed unit
-  static constexpr int kDefaultNumSteeringActions = 2 * kHopePrecision + 1; // 21
-  static constexpr int kDefaultNumSpeeds = 2;          // +1.0, -1.0
-  static constexpr int kDefaultTotalActions = 42;      // 21 * 2 = 42
+  static constexpr int kDefaultNumSteeringActions = 7; // -1.0 to 1.0 in steps
+  static constexpr int kDefaultNumStepLengths = 6;     // 0.1 to 1.0 in steps
+  static constexpr int kDefaultTotalActions = 42;      // 7 * 6 = 42
+  static constexpr double kDefaultMinSteering = -1.0;
+  static constexpr double kDefaultMaxSteering = 1.0;
+  static constexpr double kDefaultMinStepLength = 0.1;
+  static constexpr double kDefaultMaxStepLength = 1.0;
   static constexpr double kVehicleLength =
       4.8; // Vehicle length for collision checking
   static constexpr double kVehicleWidth =
       2.0; // Vehicle width for collision checking
-
-  // ====== HOPE对齐的Lidar-based掩码计算所需参数与缓存 ======
-  static constexpr int kLidarNum = 120;
-  static constexpr double kLidarRange = 10.0;
-  static constexpr double kWheelBase = 2.8;
-  static constexpr int kNumIter = 10;
-  static constexpr int kUpSample = 10;
-  static constexpr int kNumSteers = 21;
-  static constexpr int kNumSpeedsHope = 2;
-  static constexpr int kNumActionsHope = 42;
-  static constexpr double kSteerMax = 0.75;
-  static constexpr double kValidSpeed = 1.0;
-
-  bool lidar_mask_initialized_ = false;
-  std::vector<std::array<double,2>> am_action_space_;
-  std::vector<std::vector<std::array<double,2>>> am_vehicle_boxes_;
-  std::vector<double> am_vehicle_lidar_base_;
-  std::vector<std::vector<std::vector<double>>> am_dist_star_;
-
-  void AMInitializeActionSpace();
-  void AMInitializeVehicleBoxes();
-  void AMPrecomputeVehicleLidarBase();
-  void AMPrecomputeDistStar();
-  void AMEnsureInitialized();
-  static std::vector<double> AMLinearInterpolate1D(const std::vector<double>& x,
-                                                   int upsample);
-  static std::vector<float> AMMinimumFilter1DClipped(const std::vector<float>& in,
-                                                     int kernel, int clip_max);
-  static void AMBuildRectangleCorners(double cx, double cy, double yaw,
-                                      double length, double width,
-                                      std::vector<std::array<double,2>>& out4);
-  static double AMRaySegmentIntersectionDistance(double sx, double sy,
-                                                 double ex, double ey,
-                                                 double x1, double y1,
-                                                 double x2, double y2);
 };
 
 } // namespace rl_policy

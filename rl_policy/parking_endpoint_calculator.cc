@@ -28,13 +28,11 @@ namespace open_space {
 namespace rl_policy {
 
 ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
-    const ParkingSlot &slot, const std::vector<ObstacleInfo> &obstacles,
-    bool is_wheel_stop_valid) {
-
+    const ParkingSlot& slot, const std::vector<ObstacleInfo>& obstacles, bool is_wheel_stop_valid) {
   ParkingEndpoint endpoint;
 
   // Get vehicle configuration
-  const auto &config = VehicleConfigManager::GetInstance().GetConfig();
+  const auto& config = VehicleConfigManager::GetInstance().GetConfig();
 
   // Calculate slot center and heading
   swift::common::math::Vec2d slot_center;
@@ -51,22 +49,14 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
   double r2f = config.rear_to_front_axle;
 
   // Calculate endpoint position
-  if (!is_wheel_stop_valid ||
-      (is_wheel_stop_valid &&
-       (safe_distance - config.wheel_radius) > (r2f + offset))) {
+  if (!is_wheel_stop_valid || (is_wheel_stop_valid && (safe_distance - config.wheel_radius) > (r2f + offset))) {
     // No obstacle constraint: use standard distance
-    endpoint.position.set_x(slot_center.x() -
-                            (r2f + offset) * std::cos(slot_heading));
-    endpoint.position.set_y(slot_center.y() -
-                            (r2f + offset) * std::sin(slot_heading));
+    endpoint.position.set_x(slot_center.x() - (r2f + offset) * std::cos(slot_heading));
+    endpoint.position.set_y(slot_center.y() - (r2f + offset) * std::sin(slot_heading));
   } else {
     // Obstacle constraint: use safe distance
-    endpoint.position.set_x(slot_center.x() -
-                            (safe_distance - config.wheel_radius) *
-                                std::cos(slot_heading));
-    endpoint.position.set_y(slot_center.y() -
-                            (safe_distance - config.wheel_radius) *
-                                std::sin(slot_heading));
+    endpoint.position.set_x(slot_center.x() - (safe_distance - config.wheel_radius) * std::cos(slot_heading));
+    endpoint.position.set_y(slot_center.y() - (safe_distance - config.wheel_radius) * std::sin(slot_heading));
   }
 
   endpoint.yaw = slot_heading;
@@ -77,9 +67,10 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
 }
 
 ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
-    const swift::common::VehicleStateProvider &vehicle_state, const ParkingSlot &slot,
-    const std::vector<ObstacleInfo> &obstacles, bool is_wheel_stop_valid) {
-
+    const swift::common::VehicleState& vehicle_state,
+    const ParkingSlot& slot,
+    const std::vector<ObstacleInfo>& obstacles,
+    bool is_wheel_stop_valid) {
   // Build transform from vehicle state (world <-> ego)
   double tx, ty, tyaw;
   BuildTransformFromState(vehicle_state, tx, ty, tyaw);
@@ -101,24 +92,21 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
 }
 
 void ParkingEndpointCalculator::BuildTransformFromState(
-    const swift::common::VehicleStateProvider &state, double &tx, double &ty,
-    double &tyaw) {
+    const swift::common::VehicleStateProvider& state, double& tx, double& ty, double& tyaw) {
   tx = state.x();
   ty = state.y();
   tyaw = state.heading();
 }
 
 void ParkingEndpointCalculator::BuildTransformFromState(
-    const swift::common::VehicleState &state, double &tx, double &ty,
-    double &tyaw) {
+    const swift::common::VehicleState& state, double& tx, double& ty, double& tyaw) {
   tx = state.x();
   ty = state.y();
   tyaw = state.heading();
 }
 
 swift::common::math::Vec2d ParkingEndpointCalculator::TransformPoint(
-    const swift::common::math::Vec2d &p, double tx, double ty, double tyaw,
-    bool world_to_ego) {
+    const swift::common::math::Vec2d& p, double tx, double ty, double tyaw, bool world_to_ego) {
   double c = std::cos(tyaw), s = std::sin(tyaw);
   if (world_to_ego) {
     double dx = p.x() - tx;
@@ -131,8 +119,7 @@ swift::common::math::Vec2d ParkingEndpointCalculator::TransformPoint(
   }
 }
 
-double ParkingEndpointCalculator::TransformYaw(double yaw, double tyaw,
-                                               bool world_to_ego) {
+double ParkingEndpointCalculator::TransformYaw(double yaw, double tyaw, bool world_to_ego) {
   if (world_to_ego) {
     return yaw - tyaw;
   } else {
@@ -141,8 +128,7 @@ double ParkingEndpointCalculator::TransformYaw(double yaw, double tyaw,
 }
 
 ParkingSlot ParkingEndpointCalculator::TransformSlot(
-    const ParkingSlot &slot, double tx, double ty, double tyaw,
-    bool world_to_ego) {
+    const ParkingSlot& slot, double tx, double ty, double tyaw, bool world_to_ego) {
   ParkingSlot out = slot;
   out.p0 = TransformPoint(slot.p0, tx, ty, tyaw, world_to_ego);
   out.p1 = TransformPoint(slot.p1, tx, ty, tyaw, world_to_ego);
@@ -153,11 +139,10 @@ ParkingSlot ParkingEndpointCalculator::TransformSlot(
 }
 
 std::vector<ObstacleInfo> ParkingEndpointCalculator::TransformObstacles(
-    const std::vector<ObstacleInfo> &obs, double tx, double ty, double tyaw,
-    bool world_to_ego) {
+    const std::vector<ObstacleInfo>& obs, double tx, double ty, double tyaw, bool world_to_ego) {
   std::vector<ObstacleInfo> out;
   out.reserve(obs.size());
-  for (const auto &o : obs) {
+  for (const auto& o : obs) {
     ObstacleInfo t = o;
     t.position = TransformPoint(o.position, tx, ty, tyaw, world_to_ego);
     t.yaw = TransformYaw(o.yaw, tyaw, world_to_ego);
@@ -167,99 +152,85 @@ std::vector<ObstacleInfo> ParkingEndpointCalculator::TransformObstacles(
 }
 
 ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
-    const ParkingSlot &slot, const std::vector<ObstacleInfo> &obstacles,
-    bool is_wheel_stop_valid) {
-
+    const ParkingSlot& slot, const std::vector<ObstacleInfo>& obstacles, bool is_wheel_stop_valid) {
   ParkingEndpoint endpoint;
 
   // Get vehicle configuration
-  const auto &config = VehicleConfigManager::GetInstance().GetConfig();
+  const auto& config = VehicleConfigManager::GetInstance().GetConfig();
 
   // Calculate slot center and heading
   swift::common::math::Vec2d slot_center;
   double slot_heading;
   CalculateSlotCenterAndHeading(slot, slot_center, slot_heading);
 
+  std::cout << "[RL] is_wheel_stop_valid:" << is_wheel_stop_valid << std::endl;
   // Calculate endpoint position
   if (!is_wheel_stop_valid) {
     // No obstacle constraint
-    endpoint.position.set_x(slot_center.x() - (config.car_length / 2.0 - 1.0) *
-                                                  std::cos(slot_heading));
-    endpoint.position.set_y(slot_center.y() - (config.car_length / 2.0 - 1.0) *
-                                                  std::sin(slot_heading));
+    endpoint.position.set_x(slot_center.x() - (config.car_length / 2.0 - 1.0) * std::cos(slot_heading));
+    endpoint.position.set_y(slot_center.y() - (config.car_length / 2.0 - 1.0) * std::sin(slot_heading));
   } else {
     // Obstacle constraint: use safe distance
     double safe_distance = CalculateSafeDistance(slot, obstacles);
+    std::cout << "[RL] safe_distance:" << safe_distance << std::endl;
+    std::cout << "[RL] P0_x: " << slot.p0.x() << ",y:" << slot.p0.x() << std::endl;
+    std::cout << "[RL] P1_x: " << slot.p1.x() << ",y:" << slot.p1.y() << std::endl;
+    std::cout << "[RL] P2_x: " << slot.p2.x() << ",y:" << slot.p2.y() << std::endl;
+    std::cout << "[RL] slot_heading: " << slot_heading << std::endl;
     if (slot.p0.x() > slot.p1.x()) {
-      endpoint.position.set_x(slot.p0.x() -
-                              (safe_distance - 0.30) * std::cos(slot_heading));
-      endpoint.position.set_y(slot.p0.y() -
-                              (safe_distance - 0.30) * std::sin(slot_heading));
+      endpoint.position.set_x(slot.p0.x() - (safe_distance - 0.30) * std::cos(slot_heading));
+      endpoint.position.set_y(slot.p0.y() - (safe_distance - 0.30) * std::sin(slot_heading));
     } else {
-      endpoint.position.set_x(slot.p1.x() -
-                              (safe_distance - 0.30) * std::cos(slot_heading));
-      endpoint.position.set_y(slot.p1.y() -
-                              (safe_distance - 0.30) * std::sin(slot_heading));
+      endpoint.position.set_x(slot.p1.x() - (safe_distance - 0.30) * std::cos(slot_heading));
+      endpoint.position.set_y(slot.p1.y() - (safe_distance - 0.30) * std::sin(slot_heading));
     }
   }
 
+  std::cout << "[RL] ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" << endpoint.yaw
+            << std::endl;
   // Lateral position adjustment
   double euclidean_distance = CalculateDistance(slot.p3, slot.p0);
   if (slot.p0.y() > slot.p3.y()) {
-    endpoint.position.set_x(endpoint.position.x() -
-                            (euclidean_distance / 2) *
-                                std::cos(slot_heading + M_PI / 2));
-    endpoint.position.set_y(endpoint.position.y() -
-                            (euclidean_distance / 2) *
-                                std::sin(slot_heading + M_PI / 2));
+    endpoint.position.set_x(endpoint.position.x() - (euclidean_distance / 2) * std::cos(slot_heading + M_PI / 2));
+    endpoint.position.set_y(endpoint.position.y() - (euclidean_distance / 2) * std::sin(slot_heading + M_PI / 2));
   } else {
-    endpoint.position.set_x(endpoint.position.x() +
-                            (euclidean_distance / 2) *
-                                std::cos(slot_heading + M_PI / 2));
-    endpoint.position.set_y(endpoint.position.y() +
-                            (euclidean_distance / 2) *
-                                std::sin(slot_heading + M_PI / 2));
+    endpoint.position.set_x(endpoint.position.x() + (euclidean_distance / 2) * std::cos(slot_heading + M_PI / 2));
+    endpoint.position.set_y(endpoint.position.y() + (euclidean_distance / 2) * std::sin(slot_heading + M_PI / 2));
   }
 
   endpoint.yaw = slot_heading;
   endpoint.confidence = 1.0;
   endpoint.is_valid = true;
-  std::cout << "[RL]ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" << endpoint.yaw << std::endl;
+  std::cout << "[RL] ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" << endpoint.yaw
+            << std::endl;
   return endpoint;
 }
 
 ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
-    const ParkingSlot &slot, const std::vector<ObstacleInfo> &obstacles,
-    bool is_wheel_stop_valid) {
-
+    const ParkingSlot& slot, const std::vector<ObstacleInfo>& obstacles, bool is_wheel_stop_valid) {
   ParkingType type = DetectParkingType(slot);
 
   switch (type) {
-  case ParkingType::VERTICAL:
-    std::cout << "[RL] VERTICAL" << std::endl;
-    return CalculateVerticalParkingEndpoint(slot, obstacles,
-                                            is_wheel_stop_valid);
-  case ParkingType::PARALLEL:
-    std::cout << "[RL] PARALLEL" << std::endl;
-    return CalculateParallelParkingEndpoint(slot, obstacles,
-                                            is_wheel_stop_valid);
-  default:
-    AERROR << "Unsupported parking type: " << static_cast<int>(type);
-    return ParkingEndpoint();
+    case ParkingType::VERTICAL:
+      std::cout << "[RL] VERTICAL" << std::endl;
+      return CalculateVerticalParkingEndpoint(slot, obstacles, is_wheel_stop_valid);
+    case ParkingType::PARALLEL:
+      std::cout << "[RL] PARALLEL" << std::endl;
+      return CalculateParallelParkingEndpoint(slot, obstacles, is_wheel_stop_valid);
+    default:
+      AERROR << "Unsupported parking type: " << static_cast<int>(type);
+      return ParkingEndpoint();
   }
 }
 
 ParkingEndpoint ParkingEndpointCalculator::OptimizeEndpointWithObstacles(
-    const ParkingEndpoint &initial_endpoint,
-    const std::vector<ObstacleInfo> &obstacles) {
-
+    const ParkingEndpoint& initial_endpoint, const std::vector<ObstacleInfo>& obstacles) {
   // TODO: Implement obstacle-based optimization similar to UpdateEPts
   // For now, return the initial endpoint
   return initial_endpoint;
 }
 
-ParkingType
-ParkingEndpointCalculator::DetectParkingType(const ParkingSlot &slot) {
+ParkingType ParkingEndpointCalculator::DetectParkingType(const ParkingSlot& slot) {
   // Calculate slot dimensions
   double width = CalculateDistance(slot.p0, slot.p1);
   double length = CalculateDistance(slot.p0, slot.p3);
@@ -272,26 +243,22 @@ ParkingEndpointCalculator::DetectParkingType(const ParkingSlot &slot) {
   }
 }
 
-bool ParkingEndpointCalculator::ValidateEndpoint(
-    const ParkingEndpoint &endpoint, const ParkingSlot &slot) {
+bool ParkingEndpointCalculator::ValidateEndpoint(const ParkingEndpoint& endpoint, const ParkingSlot& slot) {
   // Check if endpoint is within reasonable bounds
   if (!endpoint.is_valid) {
     return false;
   }
 
   // Check if endpoint is within slot bounds (with some tolerance)
-  double tolerance = 2.0; // 2 meters tolerance
-  swift::common::math::Vec2d slot_center =
-      (slot.p0 + slot.p1 + slot.p2 + slot.p3) / 4.0;
+  double tolerance = 2.0;  // 2 meters tolerance
+  swift::common::math::Vec2d slot_center = (slot.p0 + slot.p1 + slot.p2 + slot.p3) / 4.0;
   double distance = CalculateDistance(endpoint.position, slot_center);
 
   return distance <= tolerance;
 }
 
 void ParkingEndpointCalculator::CalculateSlotCenterAndHeading(
-    const ParkingSlot &slot, swift::common::math::Vec2d &center,
-    double &heading) {
-
+    const ParkingSlot& slot, swift::common::math::Vec2d& center, double& heading) {
   // Calculate slot center
   center = (slot.p0 + slot.p1 + slot.p2 + slot.p3) / 4.0;
 
@@ -304,18 +271,16 @@ void ParkingEndpointCalculator::CalculateSlotCenterAndHeading(
 }
 
 double ParkingEndpointCalculator::CalculateSafeDistance(
-    const ParkingSlot &slot, const std::vector<ObstacleInfo> &obstacles) {
-
+    const ParkingSlot& slot, const std::vector<ObstacleInfo>& obstacles) {
   if (obstacles.empty()) {
-    return 10.0; // Default safe distance
+    return 10.0;  // Default safe distance
   }
 
   // Calculate minimum distance to obstacles
   double min_distance = std::numeric_limits<double>::max();
-  swift::common::math::Vec2d slot_center =
-      (slot.p0 + slot.p1 + slot.p2 + slot.p3) / 4.0;
+  swift::common::math::Vec2d slot_center = (slot.p0 + slot.p1 + slot.p2 + slot.p3) / 4.0;
 
-  for (const auto &obstacle : obstacles) {
+  for (const auto& obstacle : obstacles) {
     double distance = CalculateDistance(slot_center, obstacle.position);
     min_distance = std::min(min_distance, distance);
   }
@@ -334,13 +299,11 @@ double ParkingEndpointCalculator::NormalizeAngle(double angle) {
 }
 
 double ParkingEndpointCalculator::CalculateDistance(
-    const swift::common::math::Vec2d &p1,
-    const swift::common::math::Vec2d &p2) {
-
+    const swift::common::math::Vec2d& p1, const swift::common::math::Vec2d& p2) {
   return std::sqrt(std::pow(p1.x() - p2.x(), 2) + std::pow(p1.y() - p2.y(), 2));
 }
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift
