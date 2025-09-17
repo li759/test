@@ -63,6 +63,21 @@ class ParkingEndpointCalculatorTest : public ::testing::Test {
 
     // Plot parking slot
     plt::plot(slot_x, slot_y, "b-");
+    // Annotate corner points p0-p3 near their positions
+    {
+      std::vector<double> px = {slot.p0.x(), slot.p1.x(), slot.p2.x(), slot.p3.x()};
+      std::vector<double> py = {slot.p0.y(), slot.p1.y(), slot.p2.y(), slot.p3.y()};
+      std::vector<std::string> pnames = {"p0", "p1", "p2", "p3"};
+      for (size_t i = 0; i < pnames.size(); ++i) {
+        // small offset to avoid overlap with the marker
+        double ox = px[i] + 0.1;
+        double oy = py[i] + 0.1;
+        // point marker
+        plt::plot(std::vector<double>{px[i]}, std::vector<double>{py[i]}, "ko");
+        // label text
+        plt::text(ox, oy, pnames[i]);
+      }
+    }
 
     // Plot endpoint
     plt::plot({endpoint.position.x()}, {endpoint.position.y()}, "ro");
