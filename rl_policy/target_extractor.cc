@@ -140,6 +140,24 @@ TargetInfo TargetExtractor::ExtractTargetInfoFromParkingSlot(
                                         target_yaw, 0.0);
 }
 
+TargetInfo TargetExtractor::ExtractTargetInfoFromParkingSlot(
+    const swift::common::VehicleState &vehicle_state,
+    const ParkingSlot &parking_slot, const std::vector<ObstacleInfo> &obstacles,
+    bool is_wheel_stop_valid) {
+
+  // Wrap VehicleState into a minimal provider-like path by using direct state
+  ParkingEndpoint endpoint = parking_calculator_.CalculateParkingEndpoint(
+      vehicle_state, parking_slot, obstacles, is_wheel_stop_valid);
+
+  if (!endpoint.is_valid) {
+    AERROR << "Failed to calculate parking endpoint";
+    return TargetInfo();
+  }
+  swift::common::math::Vec2d target_position(endpoint.position.x(), endpoint.position.y());
+  double target_yaw = endpoint.yaw;
+  return ExtractTargetInfoWithCurvature(vehicle_state, target_position, target_yaw, 0.0);
+}
+
 } // namespace rl_policy
 } // namespace open_space
 } // namespace planning

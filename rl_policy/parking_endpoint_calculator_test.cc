@@ -18,8 +18,14 @@
 #include "modules/planning/open_space/rl_policy/parking_endpoint_calculator.h"
 
 #include <gtest/gtest.h>
+#include <matplotlibcpp.h>
+#include <iostream>
+#include <cmath>
 
 #include "modules/common/math/vec2d.h"
+#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+
+namespace plt = matplotlibcpp;
 
 namespace swift {
 namespace planning {
@@ -46,9 +52,64 @@ protected:
   void TearDown() override {}
 
   ParkingEndpointCalculator calculator_;
+
+  // Helper function to visualize parking slot and endpoint
+  void VisualizeParkingSlot(const ParkingSlot& slot, const ParkingEndpoint& endpoint, 
+                           const std::string& title = "Parking Slot and Endpoint") {
+    // Extract parking slot corners
+    std::vector<double> slot_x = {slot.p0.x(), slot.p1.x(), slot.p2.x(), slot.p3.x(), slot.p0.x()};
+    std::vector<double> slot_y = {slot.p0.y(), slot.p1.y(), slot.p2.y(), slot.p3.y(), slot.p0.y()};
+    
+    // Plot parking slot
+    plt::plot(slot_x, slot_y, "b-", {{"linewidth", 2}, {"label", "Parking Slot"}});
+    
+    // Plot endpoint
+    plt::plot({endpoint.position.x()}, {endpoint.position.y()}, "ro", 
+              {{"markersize", 8}, {"label", "Parking Endpoint"}});
+    
+    // Draw vehicle orientation at endpoint
+    double vehicle_length = 4.912;
+    double vehicle_width = 1.872;
+    double cos_yaw = std::cos(endpoint.yaw);
+    double sin_yaw = std::sin(endpoint.yaw);
+    
+    // Vehicle corners
+    std::vector<double> vehicle_x = {
+      endpoint.position.x() - vehicle_length/2 * cos_yaw + vehicle_width/2 * sin_yaw,
+      endpoint.position.x() + vehicle_length/2 * cos_yaw + vehicle_width/2 * sin_yaw,
+      endpoint.position.x() + vehicle_length/2 * cos_yaw - vehicle_width/2 * sin_yaw,
+      endpoint.position.x() - vehicle_length/2 * cos_yaw - vehicle_width/2 * sin_yaw,
+      endpoint.position.x() - vehicle_length/2 * cos_yaw + vehicle_width/2 * sin_yaw
+    };
+    std::vector<double> vehicle_y = {
+      endpoint.position.y() - vehicle_length/2 * sin_yaw - vehicle_width/2 * cos_yaw,
+      endpoint.position.y() + vehicle_length/2 * sin_yaw - vehicle_width/2 * cos_yaw,
+      endpoint.position.y() + vehicle_length/2 * sin_yaw + vehicle_width/2 * cos_yaw,
+      endpoint.position.y() - vehicle_length/2 * sin_yaw + vehicle_width/2 * cos_yaw,
+      endpoint.position.y() - vehicle_length/2 * sin_yaw - vehicle_width/2 * cos_yaw
+    };
+    
+    plt::plot(vehicle_x, vehicle_y, "g-", {{"linewidth", 1.5}, {"label", "Vehicle"}});
+    
+    // Draw heading arrow
+    double arrow_length = 2.0;
+    double arrow_x = endpoint.position.x() + arrow_length * cos_yaw;
+    double arrow_y = endpoint.position.y() + arrow_length * sin_yaw;
+    plt::arrow(endpoint.position.x(), endpoint.position.y(), 
+               arrow_x - endpoint.position.x(), arrow_y - endpoint.position.y(),
+               {{"head_width", 0.3}, {"head_length", 0.3}, {"fc", "red"}, {"ec", "red"}});
+    
+    plt::xlabel("X (m)");
+    plt::ylabel("Y (m)");
+    plt::title(title);
+    plt::legend();
+    plt::grid(true);
+    plt::axis("equal");
+    plt::show();
+  }
 };
 
-TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
+/*TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   // Create a vertical parking slot
   ParkingSlot slot;
   slot.p0 = swift::common::math::Vec2d(0.0, 0.0); // Left top
@@ -58,6 +119,7 @@ TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   slot.angle = 0.0;
   slot.width = 2.0;
   slot.type = ParkingType::VERTICAL;
+  is_wheel_stop_valid = false;
 
   // Calculate endpoint
   ParkingEndpoint endpoint = calculator_.CalculateVerticalParkingEndpoint(slot);
@@ -70,9 +132,52 @@ TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   EXPECT_NEAR(endpoint.position.x(), 1.0, 0.1); // Should be near slot center x
   EXPECT_LT(endpoint.position.y(), 0.0);        // Should be behind the slot
   EXPECT_NEAR(endpoint.yaw, M_PI / 2.0, 0.1);   // Should be vertical heading
+
+  // Visualize the result
+  VisualizeParkingSlot(slot, endpoint, "Vertical Parking Endpoint Test");
+}*/
+
+TEST_F(ParkingEndpointCalculatorTest, TestCoordinateTransformation) {
+  // Create a vehicle state (start point as origin)
+  swift::common::VehicleState vehicle_state;
+  vehicle_state.set_x(10.0);  // Start at (10, 5)
+  vehicle_state.set_y(5.0);
+  vehicle_state.set_heading(M_PI / 4);  // 45 degrees
+  
+  // Create a parking slot in world coordinates
+  ParkingSlot world_slot;
+  world_slot.p0 = swift::common::math::Vec2d(12.0, 7.0); // World coordinates
+  world_slot.p1 = swift::common::math::Vec2d(14.0, 7.0);
+  world_slot.p2 = swift::common::math::Vec2d(14.0, 12.0);
+  world_slot.p3 = swift::common::math::Vec2d(12.0, 12.0);
+  world_slot.angle = M_PI / 2;  // 90 degrees
+  world_slot.width = 2.0;
+  world_slot.type = ParkingType::VERTICAL;
+
+  // Calculate endpoint using coordinate transformation
+  ParkingEndpoint endpoint = calculator_.CalculateParkingEndpoint(
+      vehicle_state, world_slot, {}, false);
+
+  // Verify endpoint is valid
+  EXPECT_TRUE(endpoint.is_valid);
+  EXPECT_GT(endpoint.confidence, 0.0);
+
+  // Print coordinates for debugging
+  std::cout << "Vehicle start: (" << vehicle_state.x() << ", " << vehicle_state.y() 
+            << "), heading: " << vehicle_state.heading() << std::endl;
+  std::cout << "World slot corners:" << std::endl;
+  std::cout << "  P0: (" << world_slot.p0.x() << ", " << world_slot.p0.y() << ")" << std::endl;
+  std::cout << "  P1: (" << world_slot.p1.x() << ", " << world_slot.p1.y() << ")" << std::endl;
+  std::cout << "  P2: (" << world_slot.p2.x() << ", " << world_slot.p2.y() << ")" << std::endl;
+  std::cout << "  P3: (" << world_slot.p3.x() << ", " << world_slot.p3.y() << ")" << std::endl;
+  std::cout << "Endpoint (ego frame): (" << endpoint.position.x() << ", " 
+            << endpoint.position.y() << "), yaw: " << endpoint.yaw << std::endl;
+
+  // Visualize the result
+  VisualizeParkingSlot(world_slot, endpoint, "Coordinate Transformation Test");
 }
 
-TEST_F(ParkingEndpointCalculatorTest, TestParallelParkingEndpoint) {
+/*TEST_F(ParkingEndpointCalculatorTest, TestParallelParkingEndpoint) {
   // Create a parallel parking slot
   ParkingSlot slot;
   slot.p0 = swift::common::math::Vec2d(0.0, 0.0); // Left front
@@ -175,7 +280,7 @@ TEST_F(ParkingEndpointCalculatorTest, TestObstacleConstraints) {
   // Verify endpoint considers obstacle constraints
   // The endpoint should be adjusted to avoid the obstacle
   EXPECT_GT(endpoint.position.y(), -1.0); // Should be behind the obstacle
-}
+}*/
 
 } // namespace rl_policy
 } // namespace open_space

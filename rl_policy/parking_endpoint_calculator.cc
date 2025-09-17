@@ -87,9 +87,9 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParkingEndpoint(
   // Transform inputs to ego frame to align numerics with APA
   ParkingSlot slot_ego = TransformSlot(slot, tx, ty, tyaw, /*world_to_ego=*/true);
   auto obs_ego = TransformObstacles(obstacles, tx, ty, tyaw, /*world_to_ego=*/true);
-  std::cout << "[RL] P0_x: " << slot_ego.p0.x() << ",y:" << slot_ego.p0.y() << std::endl
-  std::cout << "[RL] P1_x: " << slot_ego.p1.x() << ",y:" << slot_ego.p1.y() << std::endl
-  std::cout << "[RL] P2_x: " << slot_ego.p2.x() << ",y:" << slot_ego.p2.y() << std::endl
+  std::cout << "[RL] P0_x: " << slot_ego.p0.x() << ",y:" << slot_ego.p0.y() << std::endl;
+  std::cout << "[RL] P1_x: " << slot_ego.p1.x() << ",y:" << slot_ego.p1.y() << std::endl;
+  std::cout << "[RL] P2_x: " << slot_ego.p2.x() << ",y:" << slot_ego.p2.y() << std::endl;
   std::cout << "[RL] P3_x: " << slot_ego.p3.x() << ",y:" << slot_ego.p3.y() << std::endl;
 
 

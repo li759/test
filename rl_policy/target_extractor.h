@@ -102,6 +102,13 @@ public:
       const std::vector<ObstacleInfo> &obstacles = {},
       bool is_wheel_stop_valid = false);
 
+  // Overload: keep compatibility with call sites passing VehicleState
+  TargetInfo ExtractTargetInfoFromParkingSlot(
+      const swift::common::VehicleState &vehicle_state,
+      const ParkingSlot &parking_slot,
+      const std::vector<ObstacleInfo> &obstacles = {},
+      bool is_wheel_stop_valid = false);
+
   /**
    * @brief Convert TargetInfo to vector format for RL observation
    * @param target_info Target information structure
