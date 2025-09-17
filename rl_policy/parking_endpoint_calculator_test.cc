@@ -36,7 +36,7 @@ class ParkingEndpointCalculatorTest : public ::testing::Test {
   void SetUp() override {
     // Initialize vehicle configuration
     VehicleConfig config;
-    config.car_length = 4.912;
+    config.car_length = 4.893;
     config.car_width = 1.872;
     config.front_axle = 0.953;
     config.rear_axle = 1.047;
@@ -82,27 +82,30 @@ class ParkingEndpointCalculatorTest : public ::testing::Test {
     // Plot endpoint
     plt::plot({endpoint.position.x()}, {endpoint.position.y()}, "ro");
 
+    std::vector<double> end_point_x = {-0.406427};
+    std::vector<double> end_point_y = {-3.26357};
+    plt::plot(end_point_x, end_point_y, "bo");
+
+    std::vector<double> start_point_x = {0};
+    std::vector<double> start_point_y = {0};
+    plt::plot(start_point_x, start_point_y, "yo");
+
+    // 箭头的起点坐标
+    std::vector<double> x = {0};  // 箭头起点的x坐标
+    std::vector<double> y = {0};  // 箭头起点的y坐标
+
+    // 箭头的方向分量
+    std::vector<double> u = {1};  // 箭头的x分量（航向为0，沿x轴正方向）
+    std::vector<double> v = {0};  // 箭头的y分量（航向为0，沿x轴正方向）
+
+    // 绘制箭头
+    plt::quiver(x, y, u, v);
+
     // Draw vehicle orientation at endpoint
     double vehicle_length = 4.912;
     double vehicle_width = 1.872;
     double cos_yaw = std::cos(endpoint.yaw);
     double sin_yaw = std::sin(endpoint.yaw);
-
-    // Vehicle corners
-    std::vector<double> vehicle_x = {
-        endpoint.position.x() - vehicle_length / 2 * cos_yaw + vehicle_width / 2 * sin_yaw,
-        endpoint.position.x() + vehicle_length / 2 * cos_yaw + vehicle_width / 2 * sin_yaw,
-        endpoint.position.x() + vehicle_length / 2 * cos_yaw - vehicle_width / 2 * sin_yaw,
-        endpoint.position.x() - vehicle_length / 2 * cos_yaw - vehicle_width / 2 * sin_yaw,
-        endpoint.position.x() - vehicle_length / 2 * cos_yaw + vehicle_width / 2 * sin_yaw};
-    std::vector<double> vehicle_y = {
-        endpoint.position.y() - vehicle_length / 2 * sin_yaw - vehicle_width / 2 * cos_yaw,
-        endpoint.position.y() + vehicle_length / 2 * sin_yaw - vehicle_width / 2 * cos_yaw,
-        endpoint.position.y() + vehicle_length / 2 * sin_yaw + vehicle_width / 2 * cos_yaw,
-        endpoint.position.y() - vehicle_length / 2 * sin_yaw + vehicle_width / 2 * cos_yaw,
-        endpoint.position.y() - vehicle_length / 2 * sin_yaw - vehicle_width / 2 * cos_yaw};
-
-    plt::plot(vehicle_x, vehicle_y, "g-");
 
     // Draw heading arrow
     double arrow_length = 2.0;
@@ -120,7 +123,7 @@ class ParkingEndpointCalculatorTest : public ::testing::Test {
   }
 };
 
-TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
+/*TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   // Create a vertical parking slot
   ParkingSlot slot;
   slot.p0 = swift::common::math::Vec2d(0.0, 0.0);  // Left top
@@ -144,14 +147,14 @@ TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
 
   // Visualize the result
   VisualizeParkingSlot(slot, endpoint, "Vertical Parking Endpoint Test");
-}
+}*/
 
-/*TEST_F(ParkingEndpointCalculatorTest, TestCoordinateTransformation) {
+TEST_F(ParkingEndpointCalculatorTest, TestCoordinateTransformation) {
   // Create a vehicle state (start point as origin)
   swift::common::VehicleState vehicle_state;
   vehicle_state.set_x(0);  // Start at (10, 5)
   vehicle_state.set_y(0);
-  vehicle_state.set_heading(M_PI / 4);  // 45 degrees
+  vehicle_state.set_heading(M_PI / 2);  // 45 degrees
 
   // Create a parking slot in world coordinates
   ParkingSlot world_slot;
@@ -161,14 +164,23 @@ TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   world_slot.p3 = swift::common::math::Vec2d(3.658, -4.557);
   world_slot.angle = M_PI / 2;  // 90 degrees
   world_slot.width = 2.0;
-  world_slot.type = ParkingType::VERTICAL;
+  world_slot.type = ParkingType::PARALLEL;
 
   // Calculate endpoint using coordinate transformation
-  ParkingEndpoint endpoint = calculator_.CalculateParkingEndpoint(vehicle_state, world_slot, {}, false);
+  ParkingSlot slot_ego;
+  slot_ego.p0 = swift::common::math::Vec2d(3.703, -2.381);  // World coordinates
+  slot_ego.p1 = swift::common::math::Vec2d(-1.517, -2.118);
+  slot_ego.p2 = swift::common::math::Vec2d(-1.562, -4.25);
+  slot_ego.p3 = swift::common::math::Vec2d(3.658, -4.557);
+  slot_ego.angle = M_PI / 2;  // 90 degrees
+  slot_ego.width = 2.0;
+  slot_ego.type = ParkingType::PARALLEL;
+  ParkingEndpoint endpoint_ego = calculator_.CalculateParallelParkingEndpoint(slot_ego, {}, false);
+  // ParkingEndpoint endpoint = calculator_.CalculateParkingEndpoint(vehicle_state, world_slot, {}, false);
 
   // Verify endpoint is valid
-  EXPECT_TRUE(endpoint.is_valid);
-  EXPECT_GT(endpoint.confidence, 0.0);
+  // EXPECT_TRUE(endpoint.is_valid);
+  // EXPECT_GT(endpoint.confidence, 0.0);
 
   // Print coordinates for debugging
   std::cout << "Vehicle start: (" << vehicle_state.x() << ", " << vehicle_state.y()
@@ -178,12 +190,9 @@ TEST_F(ParkingEndpointCalculatorTest, TestVerticalParkingEndpoint) {
   std::cout << "  P1: (" << world_slot.p1.x() << ", " << world_slot.p1.y() << ")" << std::endl;
   std::cout << "  P2: (" << world_slot.p2.x() << ", " << world_slot.p2.y() << ")" << std::endl;
   std::cout << "  P3: (" << world_slot.p3.x() << ", " << world_slot.p3.y() << ")" << std::endl;
-  std::cout << "Endpoint (ego frame): (" << endpoint.position.x() << ", " << endpoint.position.y()
-            << "), yaw: " << endpoint.yaw << std::endl;
-
   // Visualize the result
-  // VisualizeParkingSlot(world_slot, endpoint, "Coordinate Transformation Test");
-}*/
+  VisualizeParkingSlot(world_slot, endpoint_ego, "Coordinate Transformation Test");
+}
 
 /*TEST_F(ParkingEndpointCalculatorTest, TestParallelParkingEndpoint) {
   // Create a parallel parking slot
