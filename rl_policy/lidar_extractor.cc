@@ -23,6 +23,7 @@
 
 #include "modules/common/math/box2d.h"
 #include "modules/common/math/vec2d.h"
+#include "modules/planning/open_space/rl_policy/coord_transform.h"
 
 namespace swift {
 namespace planning {
@@ -57,19 +58,60 @@ std::vector<float> LidarExtractor::ExtractLidarBeamsFromObstacles(
     double max_range,
     int num_beams,
     double fov) {
+  // Transform into ego frame (same as ParkingEndpointCalculator world->ego)
+  const double tx = vehicle_state.x();
+  const double ty = vehicle_state.y();
+  const double tyaw = vehicle_state.heading();
+  using swift::planning::open_space::rl_policy::coord::WorldToEgo;
+
+  // Precompute obstacle corners in ego frame
+  std::vector<std::vector<swift::common::math::Vec2d>> ego_obstacles;
+  ego_obstacles.reserve(obstacles.size());
+  for (const auto& obs : obstacles) {
+    const auto& corners_world = obs.PerceptionBoundingBox().GetAllCorners();
+    std::vector<swift::common::math::Vec2d> corners_ego;
+    corners_ego.reserve(corners_world.size());
+    for (const auto& cw : corners_world) {
+      corners_ego.emplace_back(WorldToEgo(cw, tx, ty, tyaw));
+    }
+    ego_obstacles.emplace_back(std::move(corners_ego));
+  }
+
+  // Raycast in ego frame: origin (0,0), yaw = 0
   std::vector<float> lidar_beams(num_beams, max_range);
-
-  double vehicle_x = vehicle_state.x();
-  double vehicle_y = vehicle_state.y();
-  double vehicle_yaw = vehicle_state.heading();
-
-  double angle_step = fov / num_beams;
-  double start_angle = -fov / 2.0;
-
+  const double angle_step = fov / num_beams;
+  const double start_angle = -fov / 2.0;
   for (int i = 0; i < num_beams; ++i) {
-    double ray_angle = start_angle + i * angle_step;
-    double distance = RaycastToObstacles(vehicle_x, vehicle_y, vehicle_yaw, ray_angle, obstacles, max_range);
-    lidar_beams[i] = static_cast<float>(distance);
+    const double ray_angle = start_angle + i * angle_step;
+    // Compute end point of ray in ego frame
+    const double end_x = max_range * std::cos(ray_angle);
+    const double end_y = max_range * std::sin(ray_angle);
+
+    double min_distance = max_range;
+    for (const auto& corners : ego_obstacles) {
+      // Iterate edges
+      const size_t n = corners.size();
+      for (size_t k = 0; k < n; ++k) {
+        const auto& a = corners[k];
+        const auto& b = corners[(k + 1) % n];
+
+        const double denom = (0.0 - end_x) * (a.y() - b.y()) - (0.0 - end_y) * (a.x() - b.x());
+        if (std::abs(denom) < 1e-10) {
+          continue; // parallel
+        }
+        const double t = ((0.0 - a.x()) * (a.y() - b.y()) - (0.0 - a.y()) * (a.x() - b.x())) / denom;
+        const double u = -((0.0 - end_x) * (0.0 - a.y()) - (0.0 - end_y) * (0.0 - a.x())) / denom;
+        if (t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0) {
+          const double ix = 0.0 + t * (end_x - 0.0);
+          const double iy = 0.0 + t * (end_y - 0.0);
+          const double dist = std::sqrt(ix * ix + iy * iy);
+          if (dist > 0.0 && dist < min_distance) {
+            min_distance = dist;
+          }
+        }
+      }
+    }
+    lidar_beams[i] = static_cast<float>(min_distance);
   }
 
   return lidar_beams;

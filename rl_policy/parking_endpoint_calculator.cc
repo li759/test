@@ -22,6 +22,7 @@
 #include <iostream>
 #include <limits>
 #include "core/common/log.h"
+#include "modules/planning/open_space/rl_policy/coord_transform.h"
 
 namespace swift {
 namespace planning {

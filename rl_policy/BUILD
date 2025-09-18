@@ -19,7 +19,7 @@ cc_library(
 cc_library(
     name = "parking_endpoint_calculator",
     srcs = ["parking_endpoint_calculator.cc"],
-    hdrs = ["base_configure.h", "parking_endpoint_calculator.h"],
+    hdrs = ["base_configure.h", "parking_endpoint_calculator.h", "coord_transform.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
@@ -33,7 +33,7 @@ cc_library(
 cc_library(
     name = "lidar_extractor",
     srcs = ["lidar_extractor.cc"],
-    hdrs = ["base_configure.h", "lidar_extractor.h"],
+    hdrs = ["base_configure.h", "lidar_extractor.h", "coord_transform.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//core/common:log",
