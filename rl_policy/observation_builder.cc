@@ -22,6 +22,7 @@
 #include <sstream>
 #include <iostream>
 #include "modules/planning/open_space/rl_policy/matplotlibcpp.h"
+#include "modules/planning/open_space/rl_policy/coord_transform.h"
 
 namespace plt = matplotlibcpp;
 
@@ -201,16 +202,19 @@ SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
   // Extract lidar data
   observation.lidar =
       lidar_extractor_.ExtractLidarBeams(point_cloud, vehicle_state, obstacles, lidar_max_range, kDefaultLidarBeams);
+      
 
   // Extract occupancy grid image
   observation.img = image_extractor_.ExtractOccupancyGrid(
       vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight, kDefaultImgChannels, img_view_range);
 
+  
+
   // Extract action mask
   observation.action_mask = action_mask_extractor_.ExtractActionMaskFromLidar(observation.lidar);
 
   // Visualize parking scenario
-  // VisualizeParkingScenario(vehicle_state, parking_slot, obstacles, endpoint);
+   VisualizeParkingScenario(vehicle_state, parking_slot, obstacles, endpoint);
 
   // Flatten all components
   observation.Flatten();
@@ -281,6 +285,51 @@ void ObservationBuilder::VisualizeParkingScenario(
     plt::plot(obs_x, obs_y, "b_");
 
     // Fill obstacle are
+  }
+
+  // ================= Additional: Plot in Ego Frame (transformed) =================
+  const double tx = vehicle_state.x();
+  const double ty = vehicle_state.y();
+  const double tyaw = vehicle_state.heading();
+  using swift::planning::open_space::rl_policy::coord::WorldToEgo;
+
+  // Plot ego origin and endpoint in ego frame
+  std::vector<double> ego_origin_x = {0.0};
+  std::vector<double> ego_origin_y = {0.0};
+  plt::scatter(ego_origin_x, ego_origin_y, 60, {{"color", "cyan"}, {"label", "Ego Start (0,0)"}});
+
+  auto endpoint_ego = WorldToEgo(endpoint.position, tx, ty, tyaw);
+  std::vector<double> endpoint_ego_x = {endpoint_ego.x()};
+  std::vector<double> endpoint_ego_y = {endpoint_ego.y()};
+  plt::scatter(endpoint_ego_x, endpoint_ego_y, 60, {{"color", "magenta"}, {"label", "Endpoint (ego)"}});
+
+  // Plot parking slot (ego)
+  std::vector<double> slot_x_ego = {
+      WorldToEgo(parking_slot.p0, tx, ty, tyaw).x(),
+      WorldToEgo(parking_slot.p1, tx, ty, tyaw).x(),
+      WorldToEgo(parking_slot.p2, tx, ty, tyaw).x(),
+      WorldToEgo(parking_slot.p3, tx, ty, tyaw).x(),
+      WorldToEgo(parking_slot.p0, tx, ty, tyaw).x()};
+  std::vector<double> slot_y_ego = {
+      WorldToEgo(parking_slot.p0, tx, ty, tyaw).y(),
+      WorldToEgo(parking_slot.p1, tx, ty, tyaw).y(),
+      WorldToEgo(parking_slot.p2, tx, ty, tyaw).y(),
+      WorldToEgo(parking_slot.p3, tx, ty, tyaw).y(),
+      WorldToEgo(parking_slot.p0, tx, ty, tyaw).y()};
+  plt::plot(slot_x_ego, slot_y_ego, {{"color", "orange"}});
+
+  // Plot obstacles (ego)
+  for (const auto& obstacle : obstacles) {
+    const auto& corners = obstacle.PerceptionBoundingBox().GetAllCorners();
+    std::vector<double> obs_xe, obs_ye;
+    for (const auto& c : corners) {
+      auto ce = WorldToEgo(c, tx, ty, tyaw);
+      obs_xe.push_back(ce.x());
+      obs_ye.push_back(ce.y());
+    }
+    obs_xe.push_back(obs_xe.front());
+    obs_ye.push_back(obs_ye.front());
+    plt::plot(obs_xe, obs_ye, {{"color", "purple"}});
   }
 
   // Set plot properties
