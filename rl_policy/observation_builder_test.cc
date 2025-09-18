@@ -242,24 +242,24 @@ TEST_F(ObservationBuilderTest, TestParkingScenarioVisualization) {
 
   // Create test obstacles
   std::vector<swift::planning::Obstacle> obstacles;
-  
+
   // Create a simple obstacle
   swift::planning::Obstacle obstacle1;
-  obstacle1.set_id("obs1");
+  obstacle1.SetId("obs1");
   auto bbox1 = swift::common::math::Box2d(swift::common::math::Vec2d(3.0, 0.0), 0.0, 2.0, 1.0);
-  obstacle1.set_perception_bounding_box(bbox1);
+  obstacle1.MutablePerceptionBoundingBox() = bbox1;
   obstacles.push_back(obstacle1);
 
   // Create empty point cloud
   swift::perception::base::PointDCloud point_cloud;
+  ObservationBuilder builder;
 
   // Build observation (this will trigger visualization)
-  auto observation = builder.BuildObservationFromParkingSlot(
-      point_cloud, vehicle_state, obstacles, parking_slot);
+  auto observation = builder.BuildObservationFromParkingSlot(point_cloud, vehicle_state, obstacles, parking_slot);
 
   // Verify observation is valid
   EXPECT_TRUE(builder.ValidateObservation(observation));
-  
+
   // Check that the observation has correct dimensions
   EXPECT_EQ(observation.lidar.size(), SwiftObservation::GetLidarDim());
   EXPECT_EQ(observation.target.size(), SwiftObservation::GetTargetDim());

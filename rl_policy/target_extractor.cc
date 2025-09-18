@@ -97,8 +97,10 @@ std::vector<float> TargetExtractor::ExtractTargetVector(
   std::cout << "[RL] rel_distance: " << rel_distance << std::endl;
   std::cout << "[RL] rel_angle: " << rel_angle << std::endl;
   std::cout << "[RL] rel_dest_heading: " << rel_dest_heading << std::endl;
-  std::cout << "[RL] cos(rel_angle): " << std::cos(rel_angle) << "[RL] sin(rel_angle): " << std::sin(rel_angle) << std::endl;
-  std::cout << "[RL] cos(rel_dest_heading): " << std::cos(rel_dest_heading) << "[RL] sin(rel_dest_heading): " << std::sin(rel_dest_heading) << std::endl;
+  std::cout << "[RL] cos(rel_angle): " << std::cos(rel_angle) << "[RL] sin(rel_angle): " << std::sin(rel_angle)
+            << std::endl;
+  std::cout << "[RL] cos(rel_dest_heading): " << std::cos(rel_dest_heading)
+            << "[RL] sin(rel_dest_heading): " << std::sin(rel_dest_heading) << std::endl;
 
   vec[0] = static_cast<float>(rel_distance);
   vec[1] = static_cast<float>(std::cos(rel_angle));
@@ -118,14 +120,18 @@ std::pair<double, double> TargetExtractor::CalculateRelativePosition(
   double vehicle_x = vehicle_state.x();
   double vehicle_y = vehicle_state.y();
   double vehicle_yaw = vehicle_state.heading();
-  std::cout << "[RL] vehicle_x: " << vehicle_x << "[RL] vehicle_y: " << vehicle_y << "[RL] vehicle_yaw: " << vehicle_yaw << std::endl;
-  std::cout << "[RL] target_position.x(): " << target_position.x() << "[RL] target_position.y(): " << target_position.y() << std::endl;
-  
+  std::cout << "[RL] vehicle_x: " << vehicle_x << " vehicle_y: " << vehicle_y << " vehicle_yaw: " << vehicle_yaw
+            << std::endl;
+  std::cout << "[RL] target_position.x(): " << target_position.x() << " target_position.y(): " << target_position.y()
+            << std::endl;
+
 
   // Calculate global position difference
-  double global_dx = target_position.x() - vehicle_x;
-  double global_dy = target_position.y() - vehicle_y;
-  std::cout << "[RL] global_dx: " << global_dx << "[RL] global_dy: " << global_dy << std::endl;
+  // double global_dx = target_position.x() - vehicle_x;
+  // double global_dy = target_position.y() - vehicle_y;
+  double global_dx = target_position.x();
+  double global_dy = target_position.y();
+  std::cout << "[RL] global_dx: " << global_dx << " global_dy: " << global_dy << std::endl;
 
 
   // Transform to vehicle coordinate system

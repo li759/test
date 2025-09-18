@@ -39,7 +39,7 @@ const double Ang2Rad = 57.29578f;
 const double Pi = 3.1415926f;
 
 // Vehicle parameters
-const double VEHICLE_LENGTH = 4.8;
+const double VEHICLE_LENGTH = 4.893;
 const double VEHICLE_WIDTH = 2.0;
 const double VEHICLE_WHEELBASE = 2.8;
 const double VEHICLE_MAX_STEERING = 0.48f;

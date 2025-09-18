@@ -30,32 +30,33 @@ namespace open_space {
 namespace rl_policy {
 
 std::vector<float> LidarExtractor::ExtractLidarBeams(
-    const swift::perception::base::PointDCloud &point_cloud,
-    const swift::common::VehicleState &vehicle_state,
-    const std::vector<swift::planning::Obstacle> &obstacles, double max_range,
-    int num_beams, double fov) {
-
+    const swift::perception::base::PointDCloud& point_cloud,
+    const swift::common::VehicleState& vehicle_state,
+    const std::vector<swift::planning::Obstacle>& obstacles,
+    double max_range,
+    int num_beams,
+    double fov) {
   std::vector<float> lidar_beams(num_beams, max_range);
-
+  std::cout << "[RL] =====================================ExtractLidarBeams=============================" << std ::endl;
   // Try to extract from point cloud first
   if (!point_cloud.empty()) {
-    auto point_cloud_beams = ExtractFromPointCloud(point_cloud, vehicle_state,
-                                                   max_range, num_beams, fov);
+    std::cout << "[RL] use_point_cloud" << std ::endl;
+    auto point_cloud_beams = ExtractFromPointCloud(point_cloud, vehicle_state, max_range, num_beams, fov);
     if (!point_cloud_beams.empty()) {
       return point_cloud_beams;
     }
   }
-
+  std::cout << "[RL] use_Obstacles" << std ::endl;
   // Fallback to obstacle-based ray casting
-  return ExtractLidarBeamsFromObstacles(vehicle_state, obstacles, max_range,
-                                        num_beams, fov);
+  return ExtractLidarBeamsFromObstacles(vehicle_state, obstacles, max_range, num_beams, fov);
 }
 
 std::vector<float> LidarExtractor::ExtractLidarBeamsFromObstacles(
-    const swift::common::VehicleState &vehicle_state,
-    const std::vector<swift::planning::Obstacle> &obstacles, double max_range,
-    int num_beams, double fov) {
-
+    const swift::common::VehicleState& vehicle_state,
+    const std::vector<swift::planning::Obstacle>& obstacles,
+    double max_range,
+    int num_beams,
+    double fov) {
   std::vector<float> lidar_beams(num_beams, max_range);
 
   double vehicle_x = vehicle_state.x();
@@ -67,8 +68,7 @@ std::vector<float> LidarExtractor::ExtractLidarBeamsFromObstacles(
 
   for (int i = 0; i < num_beams; ++i) {
     double ray_angle = start_angle + i * angle_step;
-    double distance = RaycastToObstacles(vehicle_x, vehicle_y, vehicle_yaw,
-                                         ray_angle, obstacles, max_range);
+    double distance = RaycastToObstacles(vehicle_x, vehicle_y, vehicle_yaw, ray_angle, obstacles, max_range);
     lidar_beams[i] = static_cast<float>(distance);
   }
 
@@ -76,20 +76,23 @@ std::vector<float> LidarExtractor::ExtractLidarBeamsFromObstacles(
 }
 
 double LidarExtractor::RaycastToObstacles(
-    double start_x, double start_y, double yaw, double angle,
-    const std::vector<swift::planning::Obstacle> &obstacles, double max_range) {
-
+    double start_x,
+    double start_y,
+    double yaw,
+    double angle,
+    const std::vector<swift::planning::Obstacle>& obstacles,
+    double max_range) {
   double ray_angle = yaw + angle;
   double end_x = start_x + max_range * std::cos(ray_angle);
   double end_y = start_y + max_range * std::sin(ray_angle);
 
   double min_distance = max_range;
 
-  for (const auto &obstacle : obstacles) {
-    double distance =
-        RayObstacleIntersection(start_x, start_y, end_x, end_y, obstacle);
+  for (const auto& obstacle : obstacles) {
+    double distance = RayObstacleIntersection(start_x, start_y, end_x, end_y, obstacle);
     if (distance > 0 && distance < min_distance) {
       min_distance = distance;
+      std::cout << "[RL] min_distance:" << min_distance << std::endl;
     }
   }
 
@@ -97,10 +100,12 @@ double LidarExtractor::RaycastToObstacles(
 }
 
 double LidarExtractor::RayObstacleIntersection(
-    double ray_start_x, double ray_start_y, double ray_end_x, double ray_end_y,
-    const swift::planning::Obstacle &obstacle) {
-
-  const auto &bounding_box = obstacle.PerceptionBoundingBox();
+    double ray_start_x,
+    double ray_start_y,
+    double ray_end_x,
+    double ray_end_y,
+    const swift::planning::Obstacle& obstacle) {
+  const auto& bounding_box = obstacle.PerceptionBoundingBox();
 
   // Get obstacle corners
   std::vector<swift::common::math::Vec2d> corners;
@@ -125,7 +130,7 @@ double LidarExtractor::RayObstacleIntersection(
                    (ray_start_y - ray_end_y) * (edge_start_x - edge_end_x);
 
     if (std::abs(denom) < 1e-10) {
-      continue; // Lines are parallel
+      continue;  // Lines are parallel
     }
 
     double t = ((ray_start_x - edge_start_x) * (edge_start_y - edge_end_y) -
@@ -141,8 +146,8 @@ double LidarExtractor::RayObstacleIntersection(
       double intersection_x = ray_start_x + t * (ray_end_x - ray_start_x);
       double intersection_y = ray_start_y + t * (ray_end_y - ray_start_y);
 
-      double distance = std::sqrt(std::pow(intersection_x - ray_start_x, 2) +
-                                  std::pow(intersection_y - ray_start_y, 2));
+      double distance =
+          std::sqrt(std::pow(intersection_x - ray_start_x, 2) + std::pow(intersection_y - ray_start_y, 2));
 
       if (min_distance < 0 || distance < min_distance) {
         min_distance = distance;
@@ -154,10 +159,11 @@ double LidarExtractor::RayObstacleIntersection(
 }
 
 std::vector<float> LidarExtractor::ExtractFromPointCloud(
-    const swift::perception::base::PointDCloud &point_cloud,
-    const swift::common::VehicleState &vehicle_state, double max_range,
-    int num_beams, double fov) {
-
+    const swift::perception::base::PointDCloud& point_cloud,
+    const swift::common::VehicleState& vehicle_state,
+    double max_range,
+    int num_beams,
+    double fov) {
   std::vector<float> lidar_beams(num_beams, max_range);
 
   double vehicle_x = vehicle_state.x();
@@ -169,11 +175,11 @@ std::vector<float> LidarExtractor::ExtractFromPointCloud(
 
   // Create angle bins for each beam
   std::vector<std::vector<double>> beam_distances(num_beams);
-  
+
   std::cout << "[RL] point_cloud.size(): " << point_cloud.size() << std::endl;
 
   for (size_t i = 0; i < point_cloud.size(); ++i) {
-    const auto &point = point_cloud[i];
+    const auto& point = point_cloud[i];
 
     // Transform point to vehicle coordinate system
     double dx = point.x - vehicle_x;
@@ -202,8 +208,7 @@ std::vector<float> LidarExtractor::ExtractFromPointCloud(
   // For each beam, take the minimum distance
   for (int i = 0; i < num_beams; ++i) {
     if (!beam_distances[i].empty()) {
-      auto min_it =
-          std::min_element(beam_distances[i].begin(), beam_distances[i].end());
+      auto min_it = std::min_element(beam_distances[i].begin(), beam_distances[i].end());
       lidar_beams[i] = static_cast<float>(*min_it);
     }
   }
@@ -211,7 +216,7 @@ std::vector<float> LidarExtractor::ExtractFromPointCloud(
   return lidar_beams;
 }
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift

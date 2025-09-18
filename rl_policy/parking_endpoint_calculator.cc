@@ -78,10 +78,10 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
     // Find closest obstacle to slot center
     double min_distance = std::numeric_limits<double>::max();
     double middle_dx1 = 0.0, middle_dy1 = 0.0;
-    
+
     for (const auto& obs : obstacles) {
-      double distance = std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + 
-                                 std::pow(obs.position.y() - middle_y1, 2));
+      double distance =
+          std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + std::pow(obs.position.y() - middle_y1, 2));
       if (distance < min_distance) {
         min_distance = distance;
         middle_dx1 = obs.position.x();
@@ -90,10 +90,10 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
     }
 
     if (min_distance < std::numeric_limits<double>::max()) {
-      double la = std::sqrt((middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + 
-                           (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
-      double lb = std::sqrt((middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + 
-                           (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
+      double la = std::sqrt(
+          (middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
+      double lb = std::sqrt(
+          (middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
       ll = (la * dif_l) / (la + lb);
     }
   }
@@ -237,15 +237,14 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
   double dif_l = std::sqrt(dif_x * dif_x + dif_y * dif_y);
 
   // Calculate slot heading (dif_t)
- 
+
   if (dif_y / dif_l >= 1.0) {
     dif_t = M_PI / 2.0;
   } else if (dif_y / dif_l <= -1.0) {
     dif_t = -M_PI / 2.0;
   } else {
     // Calculate heading based on p0-p1 edge
-    double p0p1_dist = std::sqrt(std::pow(slot.p0.x() - slot.p1.x(), 2) + 
-                                std::pow(slot.p0.y() - slot.p1.y(), 2));
+    double p0p1_dist = std::sqrt(std::pow(slot.p0.x() - slot.p1.x(), 2) + std::pow(slot.p0.y() - slot.p1.y(), 2));
     if (p0p1_dist > 0) {
       if (slot.p0.x() > slot.p1.x()) {
         dif_t = std::asin((slot.p0.y() - slot.p1.y()) / p0p1_dist);
@@ -254,7 +253,7 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
       }
     }
   }
-  
+
 
   // Calculate obstacle constraints if wheel stop is valid
   double ll = 0.0;
@@ -262,10 +261,10 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
     // Find closest obstacle to slot center
     double min_distance = std::numeric_limits<double>::max();
     double middle_dx1 = 0.0, middle_dy1 = 0.0;
-    
+
     for (const auto& obs : obstacles) {
-      double distance = std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + 
-                                 std::pow(obs.position.y() - middle_y1, 2));
+      double distance =
+          std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + std::pow(obs.position.y() - middle_y1, 2));
       if (distance < min_distance) {
         min_distance = distance;
         middle_dx1 = obs.position.x();
@@ -274,10 +273,10 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
     }
 
     if (min_distance < std::numeric_limits<double>::max()) {
-      double la = std::sqrt((middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + 
-                           (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
-      double lb = std::sqrt((middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + 
-                           (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
+      double la = std::sqrt(
+          (middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
+      double lb = std::sqrt(
+          (middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
       ll = (la * dif_l) / (la + lb);
     }
   }
@@ -297,10 +296,13 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
       endpoint.position.set_y(slot.p1.y() - (ll - 0.30) * std::sin(dif_t));
     }
   }
-
+  std::cout << "[RL] car_length:" << config.car_length << std::endl;
+  std::cout << "[RL] endpoint.x:" << endpoint.position.x() << std::endl;
+  std::cout << "[RL] endpoint.x:" << endpoint.position.y() << std::endl;
+  std::cout << "[RL] endpoint.yaw:" << dif_t << std::endl;
   // Lateral position adjustment
-  double euclidean_distance = std::sqrt(std::pow(slot.p3.x() - slot.p0.x(), 2) + 
-                                       std::pow(slot.p3.y() - slot.p0.y(), 2));
+  double euclidean_distance =
+      std::sqrt(std::pow(slot.p3.x() - slot.p0.x(), 2) + std::pow(slot.p3.y() - slot.p0.y(), 2));
   if (slot.p0.y() > slot.p3.y()) {
     endpoint.position.set_x(endpoint.position.x() - (euclidean_distance / 2) * std::cos(dif_t + M_PI / 2));
     endpoint.position.set_y(endpoint.position.y() - (euclidean_distance / 2) * std::sin(dif_t + M_PI / 2));
@@ -308,7 +310,9 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
     endpoint.position.set_x(endpoint.position.x() + (euclidean_distance / 2) * std::cos(dif_t + M_PI / 2));
     endpoint.position.set_y(endpoint.position.y() + (euclidean_distance / 2) * std::sin(dif_t + M_PI / 2));
   }
-
+  std::cout << "[RL] endpoint.x:" << endpoint.position.x() << std::endl;
+  std::cout << "[RL] endpoint.x:" << endpoint.position.y() << std::endl;
+  std::cout << "[RL] endpoint.yaw:" << dif_t << std::endl;
   endpoint.yaw = dif_t;
   endpoint.confidence = 1.0;
   endpoint.is_valid = true;

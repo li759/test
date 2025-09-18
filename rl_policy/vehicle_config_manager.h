@@ -36,26 +36,29 @@ namespace rl_policy {
  * @brief Vehicle configuration parameters
  */
 struct VehicleConfig {
-  double car_length = 4.912; // Vehicle total length (m)
-  double car_width = 1.872;  // Vehicle width (m)
-  double front_axle = 0.953; // Distance from front axle to rear axle center (m)
-  double rear_axle = 1.047;  // Distance from rear axle to rear edge (m)
-  double wheel_radius = 0.386;   // Wheel radius (m)
-  double wheel_base = 2.912;     // Wheelbase (m)
-  double min_turn_radius = 6.0;  // Minimum turn radius (m)
-  double max_steer_angle = 0.48; // Maximum steering angle (rad)
+  double car_length = 4.893;      // Vehicle total length (m)
+  double car_width = 1.872;       // Vehicle width (m)
+  double front_axle = 0.953;      // Distance from front axle to rear axle center (m)
+  double rear_axle = 1.047;       // Distance from rear axle to rear edge (m)
+  double wheel_radius = 0.386;    // Wheel radius (m)
+  double wheel_base = 2.912;      // Wheelbase (m)
+  double min_turn_radius = 6.0;   // Minimum turn radius (m)
+  double max_steer_angle = 0.48;  // Maximum steering angle (rad)
 
   // Calculated parameters
-  double rear_to_front_axle =
-      car_length - rear_axle; // Distance from rear to front edge
+  double rear_to_front_axle = car_length - rear_axle;  // Distance from rear to front edge
 
   VehicleConfig() = default;
 
-  VehicleConfig(double length, double width, double front_axle_dist,
-                double rear_axle_dist, double wheel_rad, double wheelbase)
-      : car_length(length), car_width(width), front_axle(front_axle_dist),
-        rear_axle(rear_axle_dist), wheel_radius(wheel_rad),
-        wheel_base(wheelbase), rear_to_front_axle(length - rear_axle_dist) {}
+  VehicleConfig(
+      double length, double width, double front_axle_dist, double rear_axle_dist, double wheel_rad, double wheelbase)
+      : car_length(length),
+        car_width(width),
+        front_axle(front_axle_dist),
+        rear_axle(rear_axle_dist),
+        wheel_radius(wheel_rad),
+        wheel_base(wheelbase),
+        rear_to_front_axle(length - rear_axle_dist) {}
 };
 
 /**
@@ -63,21 +66,21 @@ struct VehicleConfig {
  * @brief Singleton manager for vehicle configuration
  */
 class VehicleConfigManager {
-public:
-  static VehicleConfigManager &GetInstance() {
+ public:
+  static VehicleConfigManager& GetInstance() {
     static VehicleConfigManager instance;
     return instance;
   }
 
   // Disable copy constructor and assignment operator
-  VehicleConfigManager(const VehicleConfigManager &) = delete;
-  VehicleConfigManager &operator=(const VehicleConfigManager &) = delete;
+  VehicleConfigManager(const VehicleConfigManager&) = delete;
+  VehicleConfigManager& operator=(const VehicleConfigManager&) = delete;
 
   /**
    * @brief Initialize vehicle configuration
    * @param config Vehicle configuration parameters
    */
-  void Initialize(const VehicleConfig &config) {
+  void Initialize(const VehicleConfig& config) {
     config_ = config;
     initialized_ = true;
   }
@@ -86,7 +89,7 @@ public:
    * @brief Get vehicle configuration
    * @return Reference to vehicle configuration
    */
-  const VehicleConfig &GetConfig() const { return config_; }
+  const VehicleConfig& GetConfig() const { return config_; }
 
   /**
    * @brief Check if configuration is initialized
@@ -105,7 +108,7 @@ public:
   double GetMaxSteerAngle() const { return config_.max_steer_angle; }
   double GetRearToFrontAxle() const { return config_.rear_to_front_axle; }
 
-private:
+ private:
   VehicleConfigManager() = default;
   ~VehicleConfigManager() = default;
 
@@ -113,7 +116,7 @@ private:
   bool initialized_ = false;
 };
 
-} // namespace rl_policy
-} // namespace open_space
-} // namespace planning
-} // namespace swift
+}  // namespace rl_policy
+}  // namespace open_space
+}  // namespace planning
+}  // namespace swift
