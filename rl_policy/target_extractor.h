@@ -86,6 +86,16 @@ class TargetExtractor {
       double reference_curvature = 0.0);
 
   /**
+   * @brief 直接返回 HOPE 兼容的5维target向量
+   *        [rel_distance, cos(rel_angle), sin(rel_angle), cos(rel_dest_heading), cos(rel_dest_heading)]
+   */
+  std::vector<float> ExtractTargetVector(
+      const swift::common::VehicleState& vehicle_state,
+      const swift::common::math::Vec2d& target_position,
+      double target_yaw,
+      double reference_curvature = 0.0);
+
+  /**
    * @brief Extract target information from parking slot
    * @param vehicle_state Current vehicle state
    * @param parking_slot Parking slot information

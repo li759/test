@@ -81,6 +81,14 @@ public:
   std::vector<float> CreateDefaultActionMask(int num_actions = 42);
 
   /**
+   * @brief Extract action mask from lidar data (HOPE-compatible)
+   * @param raw_lidar_obs Raw lidar observation data
+   * @return Vector of action mask values (42 elements, continuous values 0-1)
+   */
+  std::vector<float> ExtractActionMaskFromLidar(
+      const std::vector<float>& raw_lidar_obs);
+
+  /**
    * @brief Check if specific action is valid
    * @param vehicle_state Current vehicle state
    * @param obstacles List of obstacles
@@ -137,6 +145,60 @@ private:
   void GetDefaultActionSpace(std::vector<double> &steering_actions,
                              std::vector<double> &step_lengths);
 
+  // HOPE-compatible action mask calculation methods
+  /**
+   * @brief Initialize vehicle box for lidar-based action mask
+   */
+  void InitVehicleBox();
+
+  /**
+   * @brief Get vehicle lidar base distances
+   * @return Vector of lidar base distances
+   */
+  std::vector<double> GetVehicleLidarBase();
+
+  /**
+   * @brief Precompute dist_star for action mask calculation
+   */
+  void PrecomputeDistStar();
+
+  /**
+   * @brief Linear interpolation for upsampling
+   * @param x Input array
+   * @param upsample_rate Upsampling rate
+   * @return Upsampled array
+   */
+  std::vector<double> LinearInterpolate(const std::vector<double>& x, int upsample_rate);
+
+  /**
+   * @brief Post-process step lengths with minimum filter
+   * @param step_len Input step lengths
+   * @return Processed step lengths
+   */
+  std::vector<float> PostProcessStepLen(const std::vector<float>& step_len);
+
+  /**
+   * @brief Calculate intersection of two edge groups
+   * @param e1 First edge group
+   * @param e2 Second edge group
+   * @return Intersection points
+   */
+  std::vector<std::vector<double>> Intersect(
+      const std::vector<std::vector<double>>& e1,
+      const std::vector<std::vector<double>>& e2);
+
+  // HOPE action space configuration
+  static constexpr double kHopeValidSteerMax = 0.75;
+  static constexpr double kHopeValidSpeed = 1.0;
+  static constexpr int kHopePrecision = 10;
+  static constexpr int kHopeNumSteers = 2 * kHopePrecision + 1; // 21
+  static constexpr int kHopeNumActions = kHopeNumSteers * 2;    // 42
+  static constexpr int kHopeNIter = 10;
+  static constexpr int kHopeUpSampleRate = 10;
+  static constexpr int kHopeLidarNum = 120;
+  static constexpr double kHopeLidarRange = 10.0;
+  static constexpr double kHopeWheelBase = 2.912;
+
   // Default action space configuration
   static constexpr int kDefaultNumSteeringActions = 7; // -1.0 to 1.0 in steps
   static constexpr int kDefaultNumStepLengths = 6;     // 0.1 to 1.0 in steps
@@ -149,6 +211,12 @@ private:
       4.8; // Vehicle length for collision checking
   static constexpr double kVehicleWidth =
       2.0; // Vehicle width for collision checking
+
+  // HOPE algorithm member variables
+  std::vector<std::vector<std::vector<double>>> dist_star_; // [lidar_num, num_actions, n_iter]
+  std::vector<double> vehicle_lidar_base_; // [lidar_num]
+  std::vector<std::vector<double>> hope_action_space_; // [num_actions, 2] (steer, speed)
+  bool initialized_ = false;
 };
 
 } // namespace rl_policy

@@ -21,6 +21,9 @@
 #include <numeric>
 #include <sstream>
 #include <iostream>
+#include "modules/planning/open_space/rl_policy/matplotlibcpp.h"
+
+namespace plt = matplotlibcpp;
 
 namespace swift {
 namespace planning {
@@ -80,16 +83,15 @@ SwiftObservation ObservationBuilder::BuildObservationWithParams(
   observation.lidar =
       lidar_extractor_.ExtractLidarBeams(point_cloud, vehicle_state, obstacles, lidar_max_range, kDefaultLidarBeams);
 
-  // Extract target information
-  auto target_info = target_extractor_.ExtractTargetInfo(vehicle_state, target_position, target_yaw);
-  observation.target = target_extractor_.ToVector(target_info);
+  // Extract target information (HOPE-compatible 5-dimensional vector)
+  observation.target = target_extractor_.ExtractTargetVector(vehicle_state, target_position, target_yaw);
 
   // Extract occupancy grid image
   observation.img = image_extractor_.ExtractOccupancyGrid(
       vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight, kDefaultImgChannels, img_view_range);
 
   // Extract action mask
-  observation.action_mask = action_mask_extractor_.ExtractActionMask(vehicle_state, obstacles, reference_line);
+  observation.action_mask = action_mask_extractor_.ExtractActionMaskFromLidar(observation.lidar);
 
   // Flatten all components
   observation.Flatten();
@@ -184,12 +186,20 @@ SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
     obstacle_infos.push_back(info);
   }
 
-  // Extract target information from parking slot
-  TargetInfo target_info = target_extractor_.ExtractTargetInfoFromParkingSlot(
+  // Calculate parking endpoint first
+  ParkingEndpoint endpoint = parking_endpoint_calculator_.CalculateParkingEndpoint(
       vehicle_state, parking_slot, obstacle_infos, is_wheel_stop_valid);
 
-  std::cout << "[RL] x:" << vehicle_state.x() << std::endl;
-  std::cout << "[RL] x:" << vehicle_state.y() << std::endl;
+  // Extract target information from parking slot 
+  if (!endpoint.is_valid) {
+    AERROR << "Failed to calculate parking endpoint";
+    observation.target = std::vector<float>(5, 0.0f);
+  } else {
+    observation.target = target_extractor_.ExtractTargetVector(
+        vehicle_state, 
+        endpoint.position, 
+        endpoint.yaw);
+  }
 
   // Extract lidar data
   observation.lidar =
@@ -200,12 +210,138 @@ SwiftObservation ObservationBuilder::BuildObservationFromParkingSlot(
       vehicle_state, obstacles, kDefaultImgWidth, kDefaultImgHeight, kDefaultImgChannels, img_view_range);
 
   // Extract action mask
-  observation.action_mask = action_mask_extractor_.ExtractActionMask(vehicle_state, obstacles, reference_line);
+  observation.action_mask = action_mask_extractor_.ExtractActionMaskFromLidar(observation.lidar);
+
+  // Visualize parking scenario
+  VisualizeParkingScenario(vehicle_state, parking_slot, obstacles, endpoint);
 
   // Flatten all components
   observation.Flatten();
 
   return observation;
+}
+
+void ObservationBuilder::VisualizeParkingScenario(
+    const swift::common::VehicleState& vehicle_state,
+    const ParkingSlot& parking_slot,
+    const std::vector<swift::planning::Obstacle>& obstacles,
+    const ParkingEndpoint& endpoint) {
+  
+  // Set up the plot
+  plt::figure_size(800, 600);
+  plt::clf();
+  
+  // Plot vehicle position (start point)
+  std::vector<double> vehicle_x = {vehicle_state.x()};
+  std::vector<double> vehicle_y = {vehicle_state.y()};
+  plt::scatter(vehicle_x, vehicle_y, 100, {{"color", "blue"}, {"label", "Vehicle Start"}});
+  
+  // Plot vehicle orientation
+  double vehicle_heading = vehicle_state.heading();
+  double arrow_length = 2.0;
+  double vehicle_end_x = vehicle_state.x() + arrow_length * std::cos(vehicle_heading);
+  double vehicle_end_y = vehicle_state.y() + arrow_length * std::sin(vehicle_heading);
+  plt::arrow(vehicle_state.x(), vehicle_state.y(), 
+             vehicle_end_x - vehicle_state.x(), 
+             vehicle_end_y - vehicle_state.y(), 
+             {{"color", "blue"}, {"width", 0.01}});
+  
+  // Plot parking slot corners
+  std::vector<double> slot_x = {parking_slot.p0.x(), parking_slot.p1.x(), 
+                                parking_slot.p2.x(), parking_slot.p3.x(), parking_slot.p0.x()};
+  std::vector<double> slot_y = {parking_slot.p0.y(), parking_slot.p1.y(), 
+                                parking_slot.p2.y(), parking_slot.p3.y(), parking_slot.p0.y()};
+  plt::plot(slot_x, slot_y, {{"color", "green"}, {"linewidth", 2}, {"label", "Parking Slot"}});
+  
+  // Annotate parking slot corners
+  plt::annotate("P0", parking_slot.p0.x(), parking_slot.p0.y());
+  plt::annotate("P1", parking_slot.p1.x(), parking_slot.p1.y());
+  plt::annotate("P2", parking_slot.p2.x(), parking_slot.p2.y());
+  plt::annotate("P3", parking_slot.p3.x(), parking_slot.p3.y());
+  
+  // Plot parking endpoint
+  std::vector<double> endpoint_x = {endpoint.position.x()};
+  std::vector<double> endpoint_y = {endpoint.position.y()};
+  plt::scatter(endpoint_x, endpoint_y, 100, {{"color", "red"}, {"label", "Parking Endpoint"}});
+  
+  // Plot endpoint orientation
+  double endpoint_heading = endpoint.yaw;
+  double endpoint_end_x = endpoint.position.x() + arrow_length * std::cos(endpoint_heading);
+  double endpoint_end_y = endpoint.position.y() + arrow_length * std::sin(endpoint_heading);
+  plt::arrow(endpoint.position.x(), endpoint.position.y(), 
+             endpoint_end_x - endpoint.position.x(), 
+             endpoint_end_y - endpoint.position.y(), 
+             {{"color", "red"}, {"width", 0.01}});
+  
+  // Plot obstacles
+  for (size_t i = 0; i < obstacles.size(); ++i) {
+    const auto& obstacle = obstacles[i];
+    const auto& bbox = obstacle.PerceptionBoundingBox();
+    const auto& center = bbox.center();
+    const auto& corners = bbox.GetAllCorners();
+    
+    // Plot obstacle bounding box
+    std::vector<double> obs_x, obs_y;
+    for (const auto& corner : corners) {
+      obs_x.push_back(corner.x());
+      obs_y.push_back(corner.y());
+    }
+    obs_x.push_back(corners[0].x()); // Close the rectangle
+    obs_y.push_back(corners[0].y());
+    
+    plt::plot(obs_x, obs_y, {{"color", "orange"}, {"linewidth", 1}, {"alpha", 0.7}});
+    
+    // Fill obstacle area
+    plt::fill(obs_x, obs_y, {{"color", "orange"}, {"alpha", 0.3}});
+    
+    // Annotate obstacle
+    plt::annotate("Obs" + std::to_string(i), center.x(), center.y());
+  }
+  
+  // Set plot properties
+  plt::xlabel("X (m)");
+  plt::ylabel("Y (m)");
+  plt::title("Parking Scenario Visualization");
+  plt::legend();
+  plt::grid(true);
+  plt::axis("equal");
+  
+  // Set reasonable plot limits
+  double min_x = std::min({vehicle_state.x(), endpoint.position.x()});
+  double max_x = std::max({vehicle_state.x(), endpoint.position.x()});
+  double min_y = std::min({vehicle_state.y(), endpoint.position.y()});
+  double max_y = std::max({vehicle_state.y(), endpoint.position.y()});
+  
+  // Include parking slot bounds
+  for (const auto& corner : {parking_slot.p0, parking_slot.p1, parking_slot.p2, parking_slot.p3}) {
+    min_x = std::min(min_x, corner.x());
+    max_x = std::max(max_x, corner.x());
+    min_y = std::min(min_y, corner.y());
+    max_y = std::max(max_y, corner.y());
+  }
+  
+  // Add some margin
+  double margin = 5.0;
+  plt::xlim(min_x - margin, max_x + margin);
+  plt::ylim(min_y - margin, max_y + margin);
+  
+  // Save the plot
+  plt::save("parking_scenario.png");
+  plt::show();
+  
+  // Print debug information
+  std::cout << "=== Parking Scenario Visualization ===" << std::endl;
+  std::cout << "Vehicle Start: (" << vehicle_state.x() << ", " << vehicle_state.y() 
+            << "), heading: " << vehicle_heading << " rad" << std::endl;
+  std::cout << "Parking Endpoint: (" << endpoint.position.x() << ", " << endpoint.position.y() 
+            << "), heading: " << endpoint_heading << " rad" << std::endl;
+  std::cout << "Parking Slot: P0(" << parking_slot.p0.x() << ", " << parking_slot.p0.y() << "), "
+            << "P1(" << parking_slot.p1.x() << ", " << parking_slot.p1.y() << "), "
+            << "P2(" << parking_slot.p2.x() << ", " << parking_slot.p2.y() << "), "
+            << "P3(" << parking_slot.p3.x() << ", " << parking_slot.p3.y() << ")" << std::endl;
+  std::cout << "Number of obstacles: " << obstacles.size() << std::endl;
+  std::cout << "Plot saved as: parking_scenario.png" << std::endl;
+  std::cout << "=====================================" << std::endl;
 }
 
 }  // namespace rl_policy

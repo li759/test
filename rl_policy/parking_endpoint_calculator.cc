@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include "core/common/log.h"
 
 namespace swift {
@@ -34,32 +35,81 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateVerticalParkingEndpoint(
   // Get vehicle configuration
   const auto& config = VehicleConfigManager::GetInstance().GetConfig();
 
-  // Calculate slot center and heading
-  swift::common::math::Vec2d slot_center;
-  double slot_heading;
-  CalculateSlotCenterAndHeading(slot, slot_center, slot_heading);
+  // APA_planner algorithm for vertical parking
+  // Calculate middle points of slot edges
+  double middle_x1 = (slot.p0.x() + slot.p1.x()) / 2.0;
+  double middle_y1 = (slot.p0.y() + slot.p1.y()) / 2.0;
+  double middle_x2 = (slot.p2.x() + slot.p3.x()) / 2.0;
+  double middle_y2 = (slot.p2.y() + slot.p3.y()) / 2.0;
 
-  // Calculate safe distance
-  double safe_distance = CalculateSafeDistance(slot, obstacles);
+  double dif_x = middle_x1 - middle_x2;
+  double dif_y = middle_y1 - middle_y2;
+  double dif_l = std::sqrt(dif_x * dif_x + dif_y * dif_y);
 
-  // Calculate offset based on slot width and angle
+  // Calculate slot heading (dif_t)
+  double dif_t = 0.0;
+  if (dif_l > 0) {
+    if (dif_y / dif_l >= 1.0) {
+      dif_t = M_PI / 2.0;
+    } else if (dif_y / dif_l <= -1.0) {
+      dif_t = -M_PI / 2.0;
+    } else {
+      dif_t = std::asin(dif_y / dif_l);
+    }
+
+    if (dif_x < 0) {
+      if (dif_y > 0) {
+        dif_t = M_PI - dif_t;
+      } else {
+        dif_t = -M_PI - dif_t;
+      }
+    }
+  }
+
+  // Calculate offset
   double offset = std::abs(slot.width * std::cos(slot.angle)) / 4.0;
 
   // Calculate rear-to-front distance (r2f)
   double r2f = config.rear_to_front_axle;
 
-  // Calculate endpoint position
-  if (!is_wheel_stop_valid || (is_wheel_stop_valid && (safe_distance - config.wheel_radius) > (r2f + offset))) {
-    // No obstacle constraint: use standard distance
-    endpoint.position.set_x(slot_center.x() - (r2f + offset) * std::cos(slot_heading));
-    endpoint.position.set_y(slot_center.y() - (r2f + offset) * std::sin(slot_heading));
-  } else {
-    // Obstacle constraint: use safe distance
-    endpoint.position.set_x(slot_center.x() - (safe_distance - config.wheel_radius) * std::cos(slot_heading));
-    endpoint.position.set_y(slot_center.y() - (safe_distance - config.wheel_radius) * std::sin(slot_heading));
+  // Calculate obstacle constraints if wheel stop is valid
+  double ll = 0.0;
+  if (is_wheel_stop_valid && !obstacles.empty()) {
+    // Find closest obstacle to slot center
+    double min_distance = std::numeric_limits<double>::max();
+    double middle_dx1 = 0.0, middle_dy1 = 0.0;
+    
+    for (const auto& obs : obstacles) {
+      double distance = std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + 
+                                 std::pow(obs.position.y() - middle_y1, 2));
+      if (distance < min_distance) {
+        min_distance = distance;
+        middle_dx1 = obs.position.x();
+        middle_dy1 = obs.position.y();
+      }
+    }
+
+    if (min_distance < std::numeric_limits<double>::max()) {
+      double la = std::sqrt((middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + 
+                           (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
+      double lb = std::sqrt((middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + 
+                           (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
+      ll = (la * dif_l) / (la + lb);
+    }
   }
 
-  endpoint.yaw = slot_heading;
+  // Calculate endpoint position
+  if (!is_wheel_stop_valid || (is_wheel_stop_valid && ((ll - config.wheel_radius) > (r2f + offset)))) {
+    // No obstacle constraint: use standard distance
+    endpoint.position.set_x(middle_x1 - (r2f + offset) * std::cos(dif_t));
+    endpoint.position.set_y(middle_y1 - (r2f + offset) * std::sin(dif_t));
+  } else {
+    // Obstacle constraint: use safe distance
+    endpoint.position.set_x(middle_x1 - (ll - config.wheel_radius) * std::cos(dif_t));
+    endpoint.position.set_y(middle_y1 - (ll - config.wheel_radius) * std::sin(dif_t));
+  }
+
+  endpoint.yaw = dif_t;
   endpoint.confidence = 1.0;
   endpoint.is_valid = true;
 
@@ -160,60 +210,78 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
   // Get vehicle configuration
   const auto& config = VehicleConfigManager::GetInstance().GetConfig();
 
-  // Calculate slot center and heading
-  swift::common::math::Vec2d slot_center;
-  double slot_heading;
-  CalculateSlotCenterAndHeading(slot, slot_center, slot_heading);
+  // APA_planner algorithm for parallel parking
+  double dif_t = 0.0;
+  double dif_x = 0.0;
+  double dif_y = 0.0;
+  double middle_x1 = 0.0;
+  double middle_y1 = 0.0;
+  double middle_x2 = 0.0;
+  double middle_y2 = 0.0;
 
-  std::cout << "[RL] is_wheel_stop_valid:" << is_wheel_stop_valid << std::endl;
-  float dif_t = 0.0;
-  float dif_x = 0.0;
-  float dif_y = 0.0;
-  float middle_x1 = 0.0;
-  float middle_y1 = 0.0;
-  float middle_x2 = 0.0;
-  float middle_y2 = 0.0;
-
+  // Determine middle points based on slot orientation
   if (slot.p0.x() > slot.p1.x()) {
-    middle_x1 = ((float)(slot.p0.x() + slot.p3.x()) / 2.0);
-    middle_y1 = ((float)(slot.p0.y() + slot.p3.y()) / 2.0);
-    middle_x2 = ((float)(slot.p1.x() + slot.p2.x()) / 2.0);
-    middle_y2 = ((float)(slot.p1.y() + slot.p2.y()) / 2.0);
+    middle_x1 = (slot.p0.x() + slot.p3.x()) / 2.0;
+    middle_y1 = (slot.p0.y() + slot.p3.y()) / 2.0;
+    middle_x2 = (slot.p1.x() + slot.p2.x()) / 2.0;
+    middle_y2 = (slot.p1.y() + slot.p2.y()) / 2.0;
   } else {
-    middle_x1 = ((float)(slot.p1.x() + slot.p2.x()) / 2.0);
-    middle_y1 = ((float)(slot.p1.y() + slot.p2.y()) / 2.0);
-    middle_x2 = ((float)(slot.p0.x() + slot.p3.x()) / 2.0);
-    middle_y2 = ((float)(slot.p0.y() + slot.p3.y()) / 2.0);
+    middle_x1 = (slot.p1.x() + slot.p2.x()) / 2.0;
+    middle_y1 = (slot.p1.y() + slot.p2.y()) / 2.0;
+    middle_x2 = (slot.p0.x() + slot.p3.x()) / 2.0;
+    middle_y2 = (slot.p0.y() + slot.p3.y()) / 2.0;
   }
-  dif_x = (float)(middle_x1 - middle_x2);
-  dif_y = (float)(middle_y1 - middle_y2);
 
-  float dif_l = (float)(sqrt(dif_x * dif_x + dif_y * dif_y));
+  dif_x = middle_x1 - middle_x2;
+  dif_y = middle_y1 - middle_y2;
+  double dif_l = std::sqrt(dif_x * dif_x + dif_y * dif_y);
 
-  if (dif_y / dif_l >= 1.0)
+  // Calculate slot heading (dif_t)
+ 
+  if (dif_y / dif_l >= 1.0) {
     dif_t = M_PI / 2.0;
-  else if (dif_y / dif_l <= -1.0)
+  } else if (dif_y / dif_l <= -1.0) {
     dif_t = -M_PI / 2.0;
-  else {
-    // CT_AML_PC: 优化逻辑: 终点计算航向 -> AB点计算航向
-    if (slot.p0.x() > slot.p1.x())
-      dif_t = asin(
-          (float)(slot.p0.y() - slot.p1.y()) /
-          (float)(sqrt(
-              (float)((slot.p0.x() - slot.p1.x()) * (slot.p0.x() - slot.p1.x())) +
-              (float)((slot.p0.y() - slot.p1.y()) * (slot.p0.y() - slot.p1.y())))));
-    else
-      dif_t = asin(
-          (float)(slot.p1.y() - slot.p0.y()) /
-          (float)(sqrt(
-              (float)((slot.p0.x() - slot.p1.x()) * (slot.p0.x() - slot.p1.x())) +
-              (float)((slot.p0.y() - slot.p1.y()) * (slot.p0.y() - slot.p1.y())))));
+  } else {
+    // Calculate heading based on p0-p1 edge
+    double p0p1_dist = std::sqrt(std::pow(slot.p0.x() - slot.p1.x(), 2) + 
+                                std::pow(slot.p0.y() - slot.p1.y(), 2));
+    if (p0p1_dist > 0) {
+      if (slot.p0.x() > slot.p1.x()) {
+        dif_t = std::asin((slot.p0.y() - slot.p1.y()) / p0p1_dist);
+      } else {
+        dif_t = std::asin((slot.p1.y() - slot.p0.y()) / p0p1_dist);
+      }
+    }
+  }
+  
+
+  // Calculate obstacle constraints if wheel stop is valid
+  double ll = 0.0;
+  if (is_wheel_stop_valid && !obstacles.empty()) {
+    // Find closest obstacle to slot center
+    double min_distance = std::numeric_limits<double>::max();
+    double middle_dx1 = 0.0, middle_dy1 = 0.0;
+    
+    for (const auto& obs : obstacles) {
+      double distance = std::sqrt(std::pow(obs.position.x() - middle_x1, 2) + 
+                                 std::pow(obs.position.y() - middle_y1, 2));
+      if (distance < min_distance) {
+        min_distance = distance;
+        middle_dx1 = obs.position.x();
+        middle_dy1 = obs.position.y();
+      }
+    }
+
+    if (min_distance < std::numeric_limits<double>::max()) {
+      double la = std::sqrt((middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + 
+                           (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1));
+      double lb = std::sqrt((middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + 
+                           (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2));
+      ll = (la * dif_l) / (la + lb);
+    }
   }
 
-  // float middle_dx1 = ((float)(d0.x + d1.x) / 2.0);
-  // float middle_dy1 = ((float)(d0.y + d1.y) / 2.0);
-
-  std::cout << "[RL] dif_t:" << dif_t << std::endl;
   // Calculate endpoint position
   if (!is_wheel_stop_valid) {
     // No obstacle constraint
@@ -221,29 +289,18 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
     endpoint.position.set_y((slot.p0.y() + slot.p1.y()) / 2.0 - (config.car_length / 2.0 - 1.0) * std::sin(dif_t));
   } else {
     // Obstacle constraint: use safe distance
-
-    // float la = (float)(sqrt(
-    //    (middle_dx1 - middle_x1) * (middle_dx1 - middle_x1) + (middle_dy1 - middle_y1) * (middle_dy1 - middle_y1)));
-    // float lb = (float)(sqrt(
-    //    (middle_dx1 - middle_x2) * (middle_dx1 - middle_x2) + (middle_dy1 - middle_y2) * (middle_dy1 - middle_y2)));
-
-    double safe_distance = CalculateSafeDistance(slot, obstacles);
-
     if (slot.p0.x() > slot.p1.x()) {
-      endpoint.position.set_x(slot.p0.x() - (safe_distance - 0.30) * std::cos(dif_t));
-      endpoint.position.set_y(slot.p0.y() - (safe_distance - 0.30) * std::sin(dif_t));
+      endpoint.position.set_x(slot.p0.x() - (ll - 0.30) * std::cos(dif_t));
+      endpoint.position.set_y(slot.p0.y() - (ll - 0.30) * std::sin(dif_t));
     } else {
-      endpoint.position.set_x(slot.p1.x() - (safe_distance - 0.30) * std::cos(dif_t));
-      endpoint.position.set_y(slot.p1.y() - (safe_distance - 0.30) * std::sin(dif_t));
+      endpoint.position.set_x(slot.p1.x() - (ll - 0.30) * std::cos(dif_t));
+      endpoint.position.set_y(slot.p1.y() - (ll - 0.30) * std::sin(dif_t));
     }
   }
 
-  // std::cout << "[RL] ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" <<
-  // endpoint.yaw
-  << std::endl;
   // Lateral position adjustment
-  double euclidean_distance = CalculateDistance(slot.p3, slot.p0);
-  std::cout << "[RL] euclidean_distance: " << euclidean_distance << std::endl;
+  double euclidean_distance = std::sqrt(std::pow(slot.p3.x() - slot.p0.x(), 2) + 
+                                       std::pow(slot.p3.y() - slot.p0.y(), 2));
   if (slot.p0.y() > slot.p3.y()) {
     endpoint.position.set_x(endpoint.position.x() - (euclidean_distance / 2) * std::cos(dif_t + M_PI / 2));
     endpoint.position.set_y(endpoint.position.y() - (euclidean_distance / 2) * std::sin(dif_t + M_PI / 2));
@@ -255,8 +312,7 @@ ParkingEndpoint ParkingEndpointCalculator::CalculateParallelParkingEndpoint(
   endpoint.yaw = dif_t;
   endpoint.confidence = 1.0;
   endpoint.is_valid = true;
-  std::cout << "[RL] ENDPOINT_x: " << endpoint.position.x() << ",y:" << endpoint.position.y() << "yaw:" << endpoint.yaw
-            << std::endl;
+
   return endpoint;
 }
 

@@ -185,6 +185,7 @@ class ObservationBuilder {
   TargetExtractor target_extractor_;
   ImageExtractor image_extractor_;
   ActionMaskExtractor action_mask_extractor_;
+  ParkingEndpointCalculator parking_endpoint_calculator_;
 
   // Default parameters
   static constexpr double kDefaultLidarMaxRange = 10.0;
@@ -193,6 +194,19 @@ class ObservationBuilder {
   static constexpr int kDefaultImgWidth = 64;
   static constexpr int kDefaultImgHeight = 64;
   static constexpr int kDefaultImgChannels = 3;
+
+  /**
+   * @brief Visualize parking scenario with matplotlib
+   * @param vehicle_state Current vehicle state
+   * @param parking_slot Parking slot
+   * @param obstacles List of obstacles
+   * @param endpoint Calculated parking endpoint
+   */
+  void VisualizeParkingScenario(
+      const swift::common::VehicleState& vehicle_state,
+      const ParkingSlot& parking_slot,
+      const std::vector<swift::planning::Obstacle>& obstacles,
+      const ParkingEndpoint& endpoint);
 };
 
 }  // namespace rl_policy

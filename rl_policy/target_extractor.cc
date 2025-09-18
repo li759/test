@@ -78,6 +78,36 @@ std::vector<float> TargetExtractor::ToVector(const TargetInfo& target_info) {
   return target_vector;
 }
 
+std::vector<float> TargetExtractor::ExtractTargetVector(
+    const swift::common::VehicleState& vehicle_state,
+    const swift::common::math::Vec2d& target_position,
+    double target_yaw,
+    double reference_curvature) {
+  // 计算相对位姿
+  auto relative_pos = CalculateRelativePosition(vehicle_state, target_position);
+  double dx = relative_pos.first;
+  double dy = relative_pos.second;
+  double rel_distance = std::sqrt(dx * dx + dy * dy);
+  double rel_angle = std::atan2(dy, dx);
+
+  // 计算相对航向
+  double rel_dest_heading = CalculateHeadingError(vehicle_state.heading(), target_yaw);
+
+  std::vector<float> vec(5);
+  std::cout << "[RL] rel_distance: " << rel_distance << std::endl;
+  std::cout << "[RL] rel_angle: " << rel_angle << std::endl;
+  std::cout << "[RL] rel_dest_heading: " << rel_dest_heading << std::endl;
+  std::cout << "[RL] cos(rel_angle): " << std::cos(rel_angle) << "[RL] sin(rel_angle): " << std::sin(rel_angle) << std::endl;
+  std::cout << "[RL] cos(rel_dest_heading): " << std::cos(rel_dest_heading) << "[RL] sin(rel_dest_heading): " << std::sin(rel_dest_heading) << std::endl;
+
+  vec[0] = static_cast<float>(rel_distance);
+  vec[1] = static_cast<float>(std::cos(rel_angle));
+  vec[2] = static_cast<float>(std::sin(rel_angle));
+  vec[3] = static_cast<float>(std::cos(rel_dest_heading));
+  vec[4] = static_cast<float>(std::cos(rel_dest_heading));
+  return vec;
+}
+
 double TargetExtractor::CalculateHeadingError(double current_yaw, double target_yaw) {
   double error = target_yaw - current_yaw;
   return NormalizeAngle(error);
@@ -88,10 +118,15 @@ std::pair<double, double> TargetExtractor::CalculateRelativePosition(
   double vehicle_x = vehicle_state.x();
   double vehicle_y = vehicle_state.y();
   double vehicle_yaw = vehicle_state.heading();
+  std::cout << "[RL] vehicle_x: " << vehicle_x << "[RL] vehicle_y: " << vehicle_y << "[RL] vehicle_yaw: " << vehicle_yaw << std::endl;
+  std::cout << "[RL] target_position.x(): " << target_position.x() << "[RL] target_position.y(): " << target_position.y() << std::endl;
+  
 
   // Calculate global position difference
   double global_dx = target_position.x() - vehicle_x;
   double global_dy = target_position.y() - vehicle_y;
+  std::cout << "[RL] global_dx: " << global_dx << "[RL] global_dy: " << global_dy << std::endl;
+
 
   // Transform to vehicle coordinate system
   double cos_yaw = std::cos(-vehicle_yaw);

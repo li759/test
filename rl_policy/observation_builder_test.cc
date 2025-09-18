@@ -224,6 +224,49 @@ TEST_F(ObservationBuilderTest, ValidateObservation) {
   EXPECT_FALSE(builder.ValidateObservation(invalid_observation));
 }
 
+TEST_F(ObservationBuilderTest, TestParkingScenarioVisualization) {
+  // Create test vehicle state
+  swift::common::VehicleState vehicle_state;
+  vehicle_state.set_x(0.0);
+  vehicle_state.set_y(0.0);
+  vehicle_state.set_heading(0.0);
+
+  // Create test parking slot
+  ParkingSlot parking_slot;
+  parking_slot.p0 = swift::common::math::Vec2d(5.0, 2.0);
+  parking_slot.p1 = swift::common::math::Vec2d(5.0, -2.0);
+  parking_slot.p2 = swift::common::math::Vec2d(8.0, -2.0);
+  parking_slot.p3 = swift::common::math::Vec2d(8.0, 2.0);
+  parking_slot.width = 4.0;
+  parking_slot.angle = 0.0;
+
+  // Create test obstacles
+  std::vector<swift::planning::Obstacle> obstacles;
+  
+  // Create a simple obstacle
+  swift::planning::Obstacle obstacle1;
+  obstacle1.set_id("obs1");
+  auto bbox1 = swift::common::math::Box2d(swift::common::math::Vec2d(3.0, 0.0), 0.0, 2.0, 1.0);
+  obstacle1.set_perception_bounding_box(bbox1);
+  obstacles.push_back(obstacle1);
+
+  // Create empty point cloud
+  swift::perception::base::PointDCloud point_cloud;
+
+  // Build observation (this will trigger visualization)
+  auto observation = builder.BuildObservationFromParkingSlot(
+      point_cloud, vehicle_state, obstacles, parking_slot);
+
+  // Verify observation is valid
+  EXPECT_TRUE(builder.ValidateObservation(observation));
+  
+  // Check that the observation has correct dimensions
+  EXPECT_EQ(observation.lidar.size(), SwiftObservation::GetLidarDim());
+  EXPECT_EQ(observation.target.size(), SwiftObservation::GetTargetDim());
+  EXPECT_EQ(observation.img.size(), SwiftObservation::GetImgDim());
+  EXPECT_EQ(observation.action_mask.size(), SwiftObservation::GetActionMaskDim());
+}
+
 }  // namespace rl_policy
 }  // namespace open_space
 }  // namespace planning

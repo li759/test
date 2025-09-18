@@ -169,6 +169,8 @@ std::vector<float> LidarExtractor::ExtractFromPointCloud(
 
   // Create angle bins for each beam
   std::vector<std::vector<double>> beam_distances(num_beams);
+  
+  std::cout << "[RL] point_cloud.size(): " << point_cloud.size() << std::endl;
 
   for (size_t i = 0; i < point_cloud.size(); ++i) {
     const auto &point = point_cloud[i];
